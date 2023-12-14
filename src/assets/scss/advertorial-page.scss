@@ -1,0 +1,64 @@
+.advertorial-page {
+  max-width: 780px;
+  margin: 64px auto;
+  padding: 0 16px;
+  ul {
+    margin-top: 8px;
+    margin-left: 16px;
+    li {
+      line-height: 1.2;
+      font-size: 1.125rem;
+      margin-bottom: 8px;
+      &::before {
+        content: "\2022";
+        color: $text-color;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+      }
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .advertorial-btn {
+    text-align: center;
+    a {
+      min-width: 190px;
+      padding: 14px 24px;
+      display: inline-block;
+      font-family: $family-primary;
+      color: #fff !important;
+      background: linear-gradient(270deg, #e85a04 0%, #f78030 100%);
+      border-radius: 4px;
+      border: none;
+      transition: all 0.25s ease;
+      font-size: 22px;
+      line-height: 33px;
+      letter-spacing: 0.02em;
+      &:hover {
+        color: #fff !important;
+        background: linear-gradient(150deg, #d95300 0%, #d95300 100%);
+      }
+    }
+  }
+  h3,
+  h2 {
+    color: $title-color;
+  }
+  .states-image {
+    cursor: pointer;
+    margin-bottom: 32px;
+  }
+}
+.advertorial-hero-section
+  .home-page-hero-content-wrapper
+  .home-page-hero-content
+  h1 {
+  max-width: 700px;
+}
+.state-map-image:hover {
+  cursor: pointer;
+}

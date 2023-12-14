@@ -1,0 +1,318 @@
+.health-insurance-page {
+  &.banner-active {
+    position: relative;
+    top: 60px;
+  }
+  section {
+    @include desktop {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+  .health-insurance-nav {
+    padding: 10px 0;
+  }
+
+  .health-insurance-banner-section {
+    background-color: #375064;
+    padding: 40px 0;
+    .health-insurance-banner-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      // line-height: 40px;
+      line-height: 1;
+      font-size: 2.25rem;
+      color: #fff;
+      margin-bottom: 0;
+      text-align: center;
+      margin-bottom: 14px;
+      @include tablet {
+        font-size: 2.5rem;
+      }
+    }
+
+    p {
+      line-height: 1.2;
+      font-size: 1.375rem;
+      margin-bottom: 0;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 20px;
+      @include tablet {
+        font-size: 1.75rem;
+        // line-height: 60px;
+      }
+    }
+
+    .health-insurance-banner-cta {
+      cursor: pointer;
+      display: flex;
+      width: 100%;
+      max-width: 370px;
+      // height: 40px;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background-color: #e7531b;
+      font-size: 1.25rem;
+      font-weight: 600;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+      margin-bottom: 0;
+      text-align: center;
+      padding: 10px;
+      @include tablet {
+        max-width: 370px;
+        height: 60px;
+        font-size: 1.375rem;
+      }
+      &:hover {
+        background-color: darken(#e7531b, 5);
+        color: #fff;
+      }
+    }
+  }
+
+  .health-insurance-main-section {
+    margin-top: 50px;
+    h2 {
+      color: #316087;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .health-insurance-main-grid {
+      margin-top: 50px;
+      h3 {
+        line-height: 1.2;
+        color: #316087;
+        text-align: center;
+        @include tablet {
+          text-align: left;
+        }
+      }
+      p {
+        text-align: center;
+        @include tablet {
+          text-align: left;
+        }
+      }
+      display: grid;
+      gap: 32px;
+      @include tablet {
+        gap: 64px;
+        grid-template-columns: 1fr 1.5fr;
+      }
+      span {
+        cursor: pointer;
+        margin-top: 20px;
+        display: flex;
+        width: 100%;
+        height: 60px;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background-color: #e7531b;
+        font-size: 1.375rem;
+        font-weight: 600;
+        border-radius: 4px;
+        letter-spacing: 0.02em;
+        margin-bottom: 0;
+        @include tablet {
+          width: 300px;
+          padding: 16px;
+          font-size: 1.375rem;
+        }
+        &:hover {
+          background-color: darken(#e7531b, 5);
+          color: #fff;
+        }
+      }
+      .health-insurance-main-grid-col {
+        order: 2;
+        @include tablet {
+          order: 1;
+        }
+      }
+      .video-col {
+        order: 1;
+        min-height: 320px;
+        @include tablet {
+          order: 2;
+        }
+      }
+    }
+  }
+
+  .health-insurance-cards-section {
+    margin-top: 60px;
+    @include tablet {
+      margin-top: 100px;
+    }
+    h3 {
+      color: #316087;
+      margin-bottom: 50px;
+      text-align: center;
+    }
+
+    .health-insurance-cards-grid {
+      display: grid;
+      gap: 32px;
+      @include tablet {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @include desktop {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .health-insurance-card {
+        padding: 16px;
+        border-radius: 4px;
+        background-color: #fff;
+        box-shadow: 1px 1px 4px 3px rgb(0 0 0 / 10%);
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 16px;
+        .health-insurance-card-title {
+          font-size: 1.375rem;
+          color: #316087;
+          margin: 0;
+        }
+        img {
+          display: inline-block;
+        }
+        p {
+          font-size: 1.125rem;
+          margin: 0;
+          text-align: center;
+        }
+
+        // .health-insurance-card-icon {
+        //   img {
+        //     max-height: 45px;
+        //   }
+        // }
+      }
+    }
+  }
+
+  .companies-section {
+    margin-top: 60px;
+    @include tablet {
+      margin-top: 100px;
+    }
+    h3 {
+      max-width: 800px;
+      color: #316087;
+      text-align: center;
+      margin: 0 auto;
+      line-height: 1.2;
+    }
+    .companies-grid {
+      display: grid;
+      gap: 24px;
+      align-items: center;
+      margin-top: 50px;
+      grid-template-columns: repeat(2, 1fr);
+      img {
+        max-height: 60px;
+      }
+      @include tablet {
+        gap: 32px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @include desktop {
+        gap: 64px;
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  }
+  .health-insurance-footer {
+    // max-width: 1400px;
+    margin: 0 auto;
+    margin-top: 100px;
+    padding: 64px 16px 32px 16px;
+    background: #375064;
+    @include from(1420px) {
+      padding: 64px 0 32px 0;
+    }
+    .footer-logos {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 32px 0;
+      @include desktop {
+        flex-direction: row;
+      }
+      .footer-logo {
+        line-height: 1px;
+        &:first-child {
+          margin-bottom: 32px;
+          @include desktop {
+            margin-bottom: 0;
+            margin-right: 32px;
+          }
+        }
+      }
+    }
+    p {
+      line-height: 1.4;
+      font-size: 0.875rem;
+      color: #fff;
+
+      a {
+        font-size: 0.875rem;
+        color: #fff;
+        text-decoration: underline;
+        &:hover {
+          color: #0074c9;
+        }
+      }
+    }
+    .footer-copyright {
+      text-align: center;
+    }
+  }
+}
+
+.health-insurance-banner {
+  // &.hide-banner {
+  //   display: none;
+  //   overflow: hidden;
+  // }
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  background-color: #e7531b;
+  padding: 0 16px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 24px;
+  align-items: center;
+  height: 60px;
+  border-bottom: 2px solid #fff;
+  box-shadow: 0 0 30px rgb(0 0 0 / 15%);
+  span {
+    text-align: left;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: $bold;
+    font-family: $family-primary;
+    padding-left: 0;
+    @include desktop {
+      text-align: center;
+      padding-left: 24px;
+      font-size: 1.375rem;
+    }
+  }
+  img {
+    cursor: pointer;
+    width: 20px;
+    @include desktop {
+      width: 24px;
+    }
+  }
+}

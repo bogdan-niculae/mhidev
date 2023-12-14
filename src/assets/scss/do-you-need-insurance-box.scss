@@ -1,0 +1,51 @@
+.do-you-need-insurance-section {
+  background: var(--section-color);
+  background: linear-gradient(
+    180deg,
+    var(--section-color) 80%,
+    rgba(255, 255, 255, 1) 80%
+  );
+  padding-top: 64px;
+  padding-bottom: 32px;
+  // padding-left: 32px;
+  // padding-right: 32px;
+  h3 {
+    color: var(--title-color);
+    text-align: center;
+  }
+  p {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 0;
+  }
+  .do-you-need-insurance-box {
+    // background-color: var(--section-color);
+    padding-top: 32px;
+    padding-bottom: 0;
+    p {
+      text-align: left;
+      line-height: 1.2;
+    }
+    ul {
+      margin-top: 8px;
+      li {
+        line-height: 1.2;
+        font-size: 1.125rem;
+        margin-bottom: 8px;
+        &::before {
+          content: "\2022";
+          color: $green;
+          font-weight: bold;
+          display: inline-block;
+          width: 1em;
+          margin-left: -1em;
+        }
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}

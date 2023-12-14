@@ -1,0 +1,246 @@
+.blog-page {
+  padding: 64px 16px;
+}
+.post-filter-sweeper {
+  margin-bottom: 22px;
+  .swiper-slide {
+    max-width: 120px;
+    display: flex;
+    align-items: center;
+    // justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+  .swiper-button-next {
+    right: 0 !important;
+    width: 15px !important;
+    background-image: url("../svg/next.svg");
+    background-repeat: no-repeat;
+    // background-size: 100% auto;
+    background-position: center;
+  }
+  .swiper-button-prev {
+    left: 0 !important;
+    width: 15px !important;
+    background-image: url("../svg/prev.svg");
+    background-repeat: no-repeat;
+    // background-size: 100% auto;
+    background-position: center;
+  }
+  .swiper-wrapper {
+    margin-left: 20px;
+    @include desktop {
+      margin-left: 3px;
+    }
+  }
+  .swiper-button-next::after {
+    display: none;
+  }
+  .swiper-button-prev::after {
+    display: none;
+  }
+}
+.blog-intro-text-section {
+  padding: 32px 0;
+  text-align: center;
+  h2 {
+    color: var(--title-color);
+  }
+  p {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+}
+// .posts-filters-section {
+//   padding: 32px 0;
+//   .posts-filters-wrapper {
+//     display: flex;
+//     gap: 2%;
+
+//   }
+// }
+.filter-box {
+  background: #ffffff;
+  -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  color: var(--title-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 39px;
+  font-size: 0.75rem;
+  // margin-right: 24px;
+  min-width: 120px;
+  cursor: pointer;
+  img {
+    margin-right: 16px;
+  }
+  // &.news,&.save,&.learn {}
+  &:before {
+    margin-right: 5px;
+    height: 21px;
+    height: 21px;
+    // content: url("../svg/news.svg");
+  }
+  &.aca {
+    &:before {
+      content: url("../svg/aca.svg");
+    }
+    &.active {
+      &:before {
+        content: url("../svg/aca-white.svg");
+      }
+      &:hover {
+        &:before {
+          content: url("../svg/aca.svg");
+        }
+      }
+    }
+  }
+  &.news {
+    &:before {
+      content: url("../svg/news.svg");
+    }
+    &.active {
+      &:before {
+        content: url("../svg/news-white.svg");
+      }
+      &:hover {
+        &:before {
+          content: url("../svg/news.svg");
+        }
+      }
+    }
+  }
+  &.learn {
+    &:before {
+      content: url("../svg/learn.svg");
+    }
+    &.active {
+      &:before {
+        content: url("../svg/learn-white.svg");
+      }
+      &:hover {
+        &:before {
+          content: url("../svg/learn.svg");
+        }
+      }
+    }
+  }
+  &.save {
+    &:before {
+      content: url("../svg/news.svg");
+    }
+    &.active {
+      &:before {
+        content: url("../svg/news-white.svg");
+      }
+      &:hover {
+        &:before {
+          content: url("../svg/news.svg");
+        }
+      }
+    }
+  }
+  // padding: 0 24px;
+  &.active {
+    background: var(--button-bg-color);
+    color: #ffffff;
+  }
+
+  &:hover {
+    background: var(--sky-blue);
+    color: var(--title-color);
+  }
+}
+.see-more-btn {
+  cursor: pointer;
+  margin: 0 auto;
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  color: var(--nav);
+  img {
+    margin-left: 16px;
+  }
+}
+.posts-wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  // align-items: center;
+  justify-content: space-between;
+  gap: 2%;
+  .post-preview-card {
+    margin-bottom: 16px;
+    flex-basis: 100%;
+    @include tablet {
+      margin-bottom: 2%;
+      flex-basis: 49%;
+    }
+    @include desktop {
+      flex-basis: 32%;
+    }
+    &:nth-of-type(1),
+    &:nth-of-type(2) {
+      @include desktop {
+        .post-preview-category {
+          height: 38px;
+          bottom: -19px;
+          padding: 0 24px;
+          a {
+            height: 38px;
+          }
+        }
+        flex-basis: 49%;
+      }
+    }
+  }
+}
+
+.lds-facebook {
+  display: block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 8px;
+  width: 16px;
+  background: var(--loader-color);
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 8px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 32px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 56px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 8px;
+    height: 64px;
+  }
+  50%,
+  100% {
+    top: 24px;
+    height: 32px;
+  }
+}

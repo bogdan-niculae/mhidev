@@ -1,0 +1,25 @@
+TemplateFile: template.yaml
+
+# Amplify config variables
+Repository: https://github.com
+BranchStaging: dev
+BranchProduction: master
+DomainName: domain.com
+
+# Gatsby env variables
+GatsbyConcurrentDownload: GatsbyConcurrentDownload
+ZipKey: ZipKey
+Username: Username
+Password: Password
+
+# staging
+StagingWpGraphQlUrl: StagingWpGraphQlUrl
+StagingSiteUrl: StagingSiteUrl
+GatsbyRouterLogStaging: GatsbyRouterLogStaging
+GatsbyRouterLogKeyStaging: GatsbyRouterLogKeyStaging
+
+# production
+WpGraphQlUrl: WpGraphQlUrl
+SiteUrl: SiteUrl
+GatsbyRouterLog: GatsbyRouterLog
+GatsbyRouterLogKey: GatsbyRouterLogKey

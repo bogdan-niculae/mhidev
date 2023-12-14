@@ -1,0 +1,121 @@
+.all-agents-list {
+  margin-top: 64px;
+  padding: 0 16px;
+  h2 {
+    color: var(--title-color);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  h3 {
+    color: var(--title-color);
+    max-width: 1250px;
+    margin: 32px auto;
+  }
+  .agents-list {
+    display: grid;
+    grid-gap: 32px;
+    max-width: 1250px;
+    margin: 0 auto;
+    @include from(600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @include from(1200px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .agent {
+      background: $white;
+      -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+      -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 32px 16px;
+      @include from(1200px) {
+        max-width: 288px;
+      }
+      .agent-image {
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .agent-info {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        min-height: 270px;
+        .name {
+          margin-top: 16px;
+          font-size: 22px;
+          font-weight: $bold;
+        }
+        .location {
+          display: flex;
+          align-items: center;
+          color: $dark-grey;
+          font-weight: 600;
+          font-size: 18px;
+          margin-bottom: 8px;
+          img {
+            margin-right: 8px;
+          }
+        }
+        .phone {
+          display: flex;
+          align-items: center;
+          color: var(--color-primary);
+          font-size: 18px;
+          margin-bottom: 8px;
+          img {
+            margin-right: 8px;
+          }
+        }
+        .business-name {
+          text-align: center;
+          font-size: 1.125rem;
+        }
+        .consultation-link {
+          margin-top: 48px;
+          color: var(--button-primary);
+          font-weight: 600;
+          font-size: 18px;
+          border: 1px solid var(--button-primary);
+          border-radius: 4px;
+          padding: 18px 22px;
+          // align-self: flex-end;
+          @include desktop {
+            padding: 18px;
+          }
+          &:hover {
+            background-color: var(--button-primary);
+            color: $white;
+          }
+        }
+      }
+    }
+  }
+  .see-more-agents {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 32px;
+    width: 190px;
+    margin: 0 auto;
+    margin-top: 64px;
+    cursor: pointer;
+    span {
+      color: var(--nav);
+      font-weight: $bold;
+      font-size: 18px;
+      margin-right: 8px;
+    }
+  }
+}

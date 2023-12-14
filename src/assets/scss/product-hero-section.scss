@@ -1,0 +1,152 @@
+.product-hero-section {
+  position: relative;
+  overflow: hidden;
+  max-height: 340px;
+  @include tablet {
+    max-height: none;
+  }
+  .overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(48, 48, 48, 0.7);
+  }
+  .product-hero-content-wrapper {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    .product-hero-content-columns {
+      display: flex;
+      padding-top: 40px;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2%;
+      @include desktop {
+        padding-top: 81px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      h1 {
+        color: #fff;
+      }
+      p {
+        strong {
+          color: #fff;
+        }
+        max-width: 100%;
+        color: #fff;
+        font-size: 1.375rem;
+        @include desktop {
+          max-width: 650px;
+        }
+      }
+    }
+  }
+}
+.zip-form {
+  -webkit-appearance: none;
+  -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 16px;
+  font-weight: $semi-bold;
+  // height: 280px;
+  @include tablet {
+    padding: 32px;
+  }
+  &.cta-box-product {
+    .cta-box-title {
+      display: block;
+      margin-bottom: 16px;
+      color: var(--title-color);
+      font-size: 1.5rem;
+      line-height: 1.2;
+      font-family: $family-secondary;
+      text-align: center;
+    }
+    .cta-box-subtitle {
+      display: block;
+      margin-bottom: 16px;
+      color: $text-color;
+      font-weight: 400;
+      font-size: 1.25rem;
+      line-height: 1.2;
+      font-family: $family-primary;
+      text-align: center;
+    }
+    .cta-btn-phone {
+      background: var(--button-bg-color);
+      border-radius: 4px;
+      color: $white;
+      border: none;
+      padding: 14px 1.25rem;
+      font-size: 1.375rem;
+      line-height: 1.5;
+      font-family: $family-primary;
+      font-weight: $regular;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+  }
+  span {
+    display: block;
+    margin-bottom: 16px;
+    color: var(--title-color);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-family: $family-secondary;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 16px;
+  }
+  &.negative-margin {
+    z-index: 1;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    @include desktop {
+      position: relative;
+      transform: none;
+      left: auto;
+      bottom: auto;
+    }
+  }
+}
+.zip-form-hero-subtitle {
+  margin-top: -150px;
+  position: relative;
+  padding: 0 16px;
+  .zip-form {
+    margin: 0 auto;
+  }
+  .subtitle-paragraph {
+    margin-top: 32px;
+
+    p {
+      font-size: 1rem;
+    }
+  }
+}
+.pet-insurance-hero-content {
+  h1 {
+    font-size: 1.625rem;
+    @include tablet {
+      font-size: 2.875rem;
+    }
+  }
+}

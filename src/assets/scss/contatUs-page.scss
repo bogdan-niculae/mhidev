@@ -1,0 +1,186 @@
+.page-content-section.contact-us {
+  padding: 65px 10px;
+  @include tablet {
+    padding: 64px 0 65px 0;
+  }
+  .custom-container {
+    max-width: 567px;
+    background: #ffffff;
+    box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 32px;
+    .form {
+      h3 {
+        color: var(--title-color);
+        @include desktop {
+          margin-bottom: 40px;
+        }
+      }
+      label {
+        color: $dark-grey;
+        font-size: 18px;
+        font-family: $family-primary;
+        font-weight: $bold;
+        margin-bottom: 8px !important;
+        display: block;
+        font-style: normal;
+        line-height: 23px;
+        letter-spacing: 0.025em;
+      }
+      .field {
+        margin-bottom: 16px;
+        position: relative;
+        @include desktop {
+          margin-bottom: 18px;
+        }
+        div.placeholder {
+          position: absolute;
+          background-color: #f2f9ff;
+          width: 50px;
+          height: 59px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: $bold;
+          color: $dark-grey;
+          -webkit-border-top-left-radius: 4px;
+          -webkit-border-bottom-left-radius: 4px;
+          -moz-border-radius-topleft: 4px;
+          -moz-border-radius-bottomleft: 4px;
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+        }
+        div.error-message {
+          color: $dark-red;
+          font-size: 14px;
+          font-weight: $bold;
+        }
+      }
+      .field.has-error {
+        background-color: $white;
+        input,
+        select {
+          background-color: $light-pink;
+        }
+        label {
+          background-color: $white;
+        }
+      }
+      .form-box-four {
+        @include desktop {
+          display: flex;
+        }
+        .field {
+          @include desktop {
+            width: 25%;
+            padding-right: 16px;
+            &:last-child {
+              padding-right: 0;
+            }
+          }
+        }
+      }
+      .textarea {
+        min-height: 184px;
+      }
+      .secure {
+        text-align: center;
+        margin-top: 32px;
+        font-family: $family-primary;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: $dark-grey;
+        img {
+          margin-right: 9px;
+          vertical-align: middle;
+        }
+      }
+      .form-box {
+        @include desktop {
+          display: flex;
+        }
+        .field {
+          @include desktop {
+            width: 50%;
+            &:first-child {
+              padding-right: 16px;
+            }
+            input {
+              -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+              -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+              box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+            }
+          }
+        }
+      }
+      .form-buttons {
+        margin-bottom: 24px;
+        @include desktop {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 0;
+          margin-top: 32px;
+        }
+        .form.is-outlined {
+          font-size: 18px;
+          width: 100%;
+          padding: 15px 12px;
+          box-shadow: none;
+          margin-bottom: 16px;
+          @include desktop {
+            width: 472px;
+            margin: 0;
+            &:hover {
+              background: linear-gradient(
+                150deg,
+                var(--button-primary-hover) 0%,
+                var(--button-primary-hover) 100%
+              );
+              color: $white;
+            }
+          }
+        }
+        .submit {
+          width: 100%;
+          height: 60px;
+          @include desktop {
+            width: 100%;
+            &:hover {
+              background: linear-gradient(
+                150deg,
+                var(--button-primary-hover) 0%,
+                var(--button-primary-hover) 100%
+              );
+            }
+          }
+        }
+      }
+      .warning-message {
+        background-color: $light-pink;
+        border-radius: 4px;
+        padding: 24px;
+        position: relative;
+        p {
+          color: $dark-red;
+          font-style: italic;
+          margin-bottom: 0;
+          &::first-letter {
+            text-transform: uppercase;
+          }
+        }
+        img {
+          position: absolute;
+          right: 13px;
+          top: 13px;
+          cursor: pointer;
+        }
+        @include desktop {
+          margin-top: 24px;
+        }
+      }
+    }
+  }
+}

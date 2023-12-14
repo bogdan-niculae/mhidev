@@ -1,0 +1,2449 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Cloud Formation Template for Health IHC Affinity Sites
+
+Outputs:
+  DefaultDomain:
+    Value: !GetAtt AmplifyApp.DefaultDomain
+
+Parameters:
+  ProjectName:
+    Type: String
+    Description: Amplify app name
+  Repository:
+    Type: String
+    Description: GitHub Repository URL
+  BranchStaging:
+    Type: String
+    Description: Staging branch
+  BranchProduction:
+    Type: String
+    Description: Production branch
+  DomainName:
+    Type: String
+    Description: Domain name to host application
+  GatsbyConcurrentDownload:
+    Type: String
+    Description: Allowed concurrent downloads
+  StagingWpGraphQlUrl:
+    Type: String
+    Description: Staging WordPress GraphQL url
+  WpGraphQlUrl:
+    Type: String
+    Description: Production WordPress GraphQL url
+  StagingSiteUrl:
+    Type: String
+    Description: Staging site url
+  SiteUrl:
+    Type: String
+    Description: Production site url
+  ZipKey:
+    Type: String
+    Description: Marketplace key
+  GatsbyRouterLogStaging:
+    Type: String
+    Description: Staging router log API endpoint
+  GatsbyRouterLogKeyStaging:
+    Type: String
+    Description: Staging router log API key
+  GatsbyRouterLog:
+    Type: String
+    Description: Production router log API endpoint
+  GatsbyRouterLogKey:
+    Type: String
+    Description: Production router log API key
+  Username:
+    Type: String
+    Description: Username for site access
+  Password:
+    Type: String
+    Description: Password for site access
+
+Resources:
+  AmplifyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: amplify.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: Amplify
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: amplify:*
+                Resource: '*'
+
+  AmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: !Sub ${ProjectName}.v2
+      Description: IHC affinity health site
+      Repository: !Ref Repository
+      OauthToken: '{{resolve:secretsmanager:GitHubToken:SecretString:GITHUB_AUTH_TOKEN}}'
+      AccessToken: '{{resolve:secretsmanager:GitHubToken:SecretString:GITHUB_AUTH_TOKEN}}'
+      EnableBranchAutoDeletion: true
+      AutoBranchCreationConfig:
+        AutoBranchCreationPatterns:
+          - feature/*
+        BasicAuthConfig:
+          EnableBasicAuth: true
+          Username: !Ref Username
+          Password: !Ref Password
+        EnableAutoBuild: true
+        EnableAutoBranchCreation: true
+        EnablePullRequestPreview: true
+        PullRequestEnvironmentName: prenv
+        Stage: PULL_REQUEST # PRODUCTION | BETA | DEVELOPMENT | EXPERIMENTAL | PULL_REQUEST
+      EnvironmentVariables:
+        - Name: GATSBY_STAGE
+          Value: staging
+        - Name: GATSBY_CONCURRENT_DOWNLOAD
+          Value: !Ref GatsbyConcurrentDownload
+        - Name: GATSBY_MARKET_ZIP
+          Value: !Ref ZipKey
+        - Name: GATSBY_SITE_URL
+          Value: !Ref StagingSiteUrl
+        - Name: SITE_URL
+          Value: !Ref StagingSiteUrl
+        - Name: WPGRAPHQL_URL
+          Value: !Ref StagingWpGraphQlUrl
+        - Name: GATSBY_ROUTER_LOG
+          Value: !Ref GatsbyRouterLogStaging
+        - Name: GATSBY_ROUTER_LOG_KEY
+          Value: !Ref GatsbyRouterLogKeyStaging
+
+      BuildSpec: |
+        version: 0.1
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - nvm use $VERSION_NODE_14
+                - npm install
+            build:
+              commands:
+                - nvm use $VERSION_NODE_14
+                - npm run build
+          artifacts:
+            baseDirectory: public
+            files:
+              - '**/*'
+          cache:
+            paths:
+              - node_modules/**/*
+
+      CustomRules:
+        - Source: https://myhealthinsurance.com
+          Target: https://www.myhealthinsurance.com
+          Status: '301'
+        # - Source: https://myhealthinsurance.com
+        #   Target: https://healthedeals.com
+        #   Status: '301'
+        # - Source: https://www.myhealthinsurance.com
+        #   Target: https://healthedeals.com
+        #   Status: '301'
+        - Source: </^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|avif|json|webmanifest)$)([^.]+$)/>
+          Target: /index.html
+          Status: '404-200'
+        - Source: /<*>
+          Target: /404
+          Status: '404'
+        - Source: /2018-open-enrollment-5-changes-to-know/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /about/
+          Target: /about-us/
+          Status: '301'
+        - Source: /aca-faq/
+          Target: /blog/category/aca/
+          Status: '301'
+        - Source: /accident-critical-illness-life-insurance/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /accident-insurance/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /agent-finder/
+          Target: /
+          Status: '301'
+        - Source: /agent-finder-test/
+          Target: /
+          Status: '301'
+        - Source: /alternative-health-insurance/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /alternative-health-insurance/hospital/
+          Target: /health-insurance-plans/hospital-indemnity-insurance
+          Status: '301'
+        - Source: /alternative-health-insurance/hospital/quote/
+          Target: /health-insurance-plans/hospital-indemnity-insurance
+          Status: '301'
+        - Source: /alternative-health-insurance/packages/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /alternative-health-insurance/short-term/
+          Target: /health-insurance-plans/short-term
+          Status: '301'
+        - Source: /alternative-health-insurance/short-term/connect-plus/
+          Target: /alternative-health-insurance/short-term/
+          Status: '301'
+        - Source: /alternative-health-insurance/short-term/faq/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /alternative-health-insurance/short-term/quote/
+          Target: /health-insurance-plans/short-term
+          Status: '301'
+        - Source: /articles/
+          Target: /blog/
+          Status: '301'
+        - Source: /articles/
+          Target: /blog/
+          Status: '301'
+        - Source: /articles/-donald-trump-healthcare-plan/
+          Target: /
+          Status: '301'
+        - Source: /articles/-finding-a-licensed-health-insurance-agent/
+          Target: /blog/learn/finding-a-licensed-health-insurance-agent/
+          Status: '301'
+        - Source: /articles/10-essential-health-insurance-terms-you-should-know/
+          Target: /glossary/
+          Status: '301'
+        - Source: /articles/10-essential-obamacare-terms-you-should-know/
+          Target: /glossary/
+          Status: '301'
+        - Source: /articles/10-obamacare-basics-a-2016-aca-refresher/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/10-things-to-know-about-obamacare-in-2014/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/11-ways-to-be-a-wise-healthcare-consumer/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /articles/15-obamacare-exemptions-that-may-help-avoid-the-tax-penalty/
+          Target: /blog/aca/obamacare-exemptions/
+          Status: '301'
+        - Source: /articles/2016-health-insurance-marketplace-and-state-exchange-websites/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /articles/2018-aca-health-insurance-rates-atlanta-ga/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/2018-aca-health-insurance-rates-nashville-tn/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/2018-aca-health-insurance-rates-phoenix-az/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/3-actions-to-take-if-you-havent-used-your-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /articles/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Target: /blog/save/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Status: '301'
+        - Source: /articles/3-preventive-health-benefits-to-use-before-2016-open-enrollment/
+          Target: /
+          Status: '301'
+        - Source: /articles/3-reasons-your-health-plan-may-be-cancelled/
+          Target: /blog/aca/reasons-your-health-plan-may-be-cancelled/
+          Status: '301'
+        - Source: /articles/3-supplemental-health-insurance-benefits-that-can-help-your-family-save-in-2016/
+          Target: /blog/learn/health-insurance-coverage-gaps/
+          Status: '301'
+        - Source: /articles/3-top-health-insurance-options-for-seasonal-holiday-employees/
+          Target: /blog/save/independent-contractor-health-insurance/
+          Status: '301'
+        - Source: /articles/3-top-ways-to-deal-with-unexpected-medical-bills/
+          Target: /blog/save/how-to-dispute-a-medical-bill/
+          Status: '301'
+        - Source: /articles/3-valuable-discounts-to-look-for-in-your-next-dental-plan/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /articles/4-top-apps-for-organizing-your-medical-records/
+          Target: /blog/learn/4-top-apps-for-organizing-your-medical-records/
+          Status: '301'
+        - Source: /articles/4-top-reasons-to-get-your-teeth-cleaned/
+          Target: /blog/save/how-much-does-a-dental-cleaning-cost-without-insurance/
+          Status: '301'
+        - Source: /articles/5-easy-ways-to-reduce-health-care-costs/
+          Target: /blog/save/5-easy-ways-to-reduce-health-care-costs/
+          Status: '301'
+        - Source: /articles/5-health-insurance-options-for-newlyweds/
+          Target: /blog/save/married-couple-health-insurance/
+          Status: '301'
+        - Source: /articles/5-iphone-free-apps-for-better-health/
+          Target: /
+          Status: '301'
+        - Source: /articles/5-things-to-remember-about-your-hsa-account/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/5-top-apps-for-better-sleep/
+          Target: /blog/learn/5-top-apps-to-help-you-sleep-better/
+          Status: '301'
+        - Source: /articles/5-top-apps-to-help-you-sleep-better/
+          Target: /blog/learn/5-top-apps-to-help-you-sleep-better/
+          Status: '301'
+        - Source: /articles/5-top-free-apps-for-managing-your-health-in-2015/
+          Target: /
+          Status: '301'
+        - Source: /articles/5-top-ios-and-android-apps-for-food-allergies-and-intolerances/
+          Target: /blog/learn/5-top-ios-and-android-apps-for-food-allergies-and-intolerances/
+          Status: '301'
+        - Source: /articles/5-top-pregnancy-apps/
+          Target: /
+          Status: '301'
+        - Source: /articles/5-top-reasons-short-term-medical-is-a-smart-temporary-health-insurance-option-for-international-students/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /articles/5-top-short-term-health-insurance-myths-busted/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /articles/5-top-ways-to-find-a-reliable-health-insurance-carrier/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /articles/5-types-of-obamacare-health-plan-application-help/
+          Target: /blog/aca/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Status: '301'
+        - Source: /articles/6-month-health-insurance/
+          Target: /blog/news/federal-ruling-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/6-reasons-for-short-term-medical/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /articles/6-tips-for-buying-health-insurance-online/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /articles/7-health-insurance-changes-to-look-for-in-2016/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/7-health-insurance-options-for-young-adults/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /articles/7-things-you-need-to-know-about-short-term-health-insurance/
+          Target: /blog/save/unemployed-health-insurance/
+          Status: '301'
+        - Source: /articles/7-tips-for-understanding-and-negotiating-your-medical-bills/
+          Target: /blog/save/how-to-dispute-a-medical-bill/
+          Status: '301'
+        - Source: /articles/7-ways-to-get-the-most-out-of-your-new-aca-compliant-health-insurance-plan/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /articles/a-brief-guide-to-obamacare-health-insurance-for-latinos/
+          Target: /
+          Status: '301'
+        - Source: /articles/a-brief-look-at-the-vaccine-debate/
+          Target: /
+          Status: '301'
+        - Source: /articles/a-guide-to-available-health-insurance-premium-deductions-for-the-self-employed/
+          Target: /blog/learn/are-health-insurance-premiums-deductible/
+          Status: '301'
+        - Source: /articles/a-quick-look-at-2018-aca-health-insurance-rates-in-dallas-tx/
+          Target: /
+          Status: '301'
+        - Source: /articles/aca-pre-existing-conditions-coverage/
+          Target: /blog/news/aca-pre-existing-conditions-coverage/
+          Status: '301'
+        - Source: /articles/adult-dental-insurance-more-cost-friendly/
+          Target: /blog/aca/obamacare-dental-insurance/
+          Status: '301'
+        - Source: /articles/affordable-care-act-timeline/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/affordable-health-insurance-outside-open-enrollment/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /articles/affordable-medical-insurance-options-for-20-somethings/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /articles/are-health-insurance-premiums-deductible/
+          Target: /blog/learn/are-health-insurance-premiums-deductible/
+          Status: '301'
+        - Source: /articles/are-hospital-indemnity-benefits-right-for-you/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/are-weddings-a-qualifying-event-for-health-insurance/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /articles/are-you-satisfied-with-your-health-insurance-plan/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/ask-frank-2017-open-enrollment-december-15/
+          Target: /
+          Status: '301'
+        - Source: /articles/ask-frank-can-employers-pay-obamacare-premiums/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /articles/ask-frank-limited-health-insurance-options/
+          Target: /blog/aca/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Status: '301'
+        - Source: /articles/ask-frank-obamacare-narrow-networks/
+          Target: /
+          Status: '301'
+        - Source: /articles/ask-frank-uninsured-between-jobs-will-i-owe-a-tax-penalty/
+          Target: /blog/aca/obamacare-exemptions/
+          Status: '301'
+        - Source: /articles/ask-frank-will-the-individual-mandate-tax-penalty-be-enforced/
+          Target: /blog/aca/individual-mandate-repeal/
+          Status: '301'
+        - Source: /articles/avoid-penalty-with-minimum-essential-coverage/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /articles/back-to-school-financial-savvy-6-health-insurance-options-for-college-students/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /articles/best-health-plan-dont-qualify-for-obamacare/
+          Target: /blog/save/best-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/beyond-major-medical-4-supplemental-health-plans-you-should-consider/
+          Target: /blog/learn/health-insurance-coverage-gaps/
+          Status: '301'
+        - Source: /articles/buying-individual-health-insurance-during-a-divorce/
+          Target: /blog/learn/buying-individual-health-insurance-during-a-divorce/
+          Status: '301'
+        - Source: /articles/california-eliminates-short-term-health-plans/
+          Target: /blog/save/short-term-health-insurance-state-duration-limits/
+          Status: '301'
+        - Source: /articles/can-i-change-my-health-insurance-plan-after-i-enroll/
+          Target: /blog/aca/how-to-switch-health-insurance-after-open-enrollment/
+          Status: '301'
+        - Source: /articles/can-my-employer-cancel-my-health-insurance-and-send-me-to-an-exchange/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /articles/catastrophic-health-plans-and-obamacare/
+          Target: /blog/aca/catastrophic-health-plans-and-obamacare/
+          Status: '301'
+        - Source: /articles/competition-choice-dwindle-as-aetna-and-others-exit-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /articles/critical-illness-a-plan-worth-having-when-you-own-a-small-business/
+          Target: /blog/save/self-employed-health-insurance/
+          Status: '301'
+        - Source: /articles/critical-illness-plan-worth-having/
+          Target: /blog/save/early-retirement-health-insurance/
+          Status: '301'
+        - Source: /articles/critical-illness-plan-worth-having/
+          Target: /blog/save/early-retirement-health-insurance/
+          Status: '301'
+        - Source: /articles/deductible-dilemmas/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /articles/dental-checkups-back-to-school/
+          Target: /blog/learn/family-dental-insurance-kids-and-adults/
+          Status: '301'
+        - Source: /articles/dental-insurance-is-prudent/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /articles/dental-insurance-not-an-essential-health-benefit/
+          Target: /blog/aca/private-or-exchange-dental-insurance/
+          Status: '301'
+        - Source: /articles/dependent-health-insurance-under-the-affordable-care-act/
+          Target: /blog/learn/child-only-health-insurance/
+          Status: '301'
+        - Source: /articles/designed-to-ease-financial-burden-of-out-of-pocket-costs-metal-gap-proves-popular-in-open-enrollment/
+          Target: /blog/save/is-medical-gap-insurance-worth-it/
+          Status: '301'
+        - Source: /articles/diabetes-costs/
+          Target: /blog/save/diabetes-costs/
+          Status: '301'
+        - Source: /articles/do-i-need-dental-insurance-if-i-have-obamacare/
+          Target: /blog/aca/obamacare-dental-insurance/
+          Status: '301'
+        - Source: /articles/do-obamacare-plans-cover-eye-exams/
+          Target: /blog/aca/do-obamacare-plans-cover-eye-exams/
+          Status: '301'
+        - Source: /articles/do-you-need-Obamacare-health-insurance/
+          Target: /blog/aca/no-health-insurance-coverage/
+          Status: '301'
+        - Source: /articles/does-health-insurance-cover-skin-cancer-screening/
+          Target: /blog/learn/does-health-insurance-cover-skin-cancer-screening/
+          Status: '301'
+        - Source: /articles/does-my-health-insurance-cover-flu-shots/
+          Target: /blog/learn/does-my-health-insurance-cover-flu-shots/
+          Status: '301'
+        - Source: /articles/does-obamacare-require-you-to-buy-insurance-or-are-you-exempt/
+          Target: /blog/aca/obamacare-exemptions/
+          Status: '301'
+        - Source: /articles/does-short-term-health-insurance-cover-preventive-care/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /articles/dont-crowdfund-your-medical-bills-consider-short-term-health-insurance/
+          Target: /blog/save/unemployed-health-insurance/
+          Status: '301'
+        - Source: /articles/dont-live-in-a-bubble-a-plan-to-help-with-high-deductibles/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /articles/dont-make-a-1000-obamacare-mistake-health-insurance-options-for-healthy-non-subsidy-eligible-people/
+          Target: /blog/learn/do-you-need-health-insurance/
+          Status: '301'
+        - Source: /articles/dont-make-these-obamacare-subsidy-mistakes/
+          Target: /
+          Status: '301'
+        - Source: /articles/dont-qualify-for-an-obamacare-subsidy-3-alternatives/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /articles/essential-health-benefits-a-set-of-healthcare-services-that-obamacare-ensures-you-have/
+          Target: /blog/aca/what-are-aca-required-essential-health-benefits/
+          Status: '301'
+        - Source: /articles/estimate-obamacare-premium-with-health-care-calculator/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /articles/exempt-from-penalty-for-no-insurance/
+          Target: /blog/aca/obamacare-exemptions/
+          Status: '301'
+        - Source: /articles/faith-based-healthcare-coverage-under-the-aca/
+          Target: /blog/aca/christian-health-insurance/
+          Status: '301'
+        - Source: /articles/federal-ruling-short-term-health-insurance/
+          Target: /blog/news/federal-ruling-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/fine-for-not-having-insurance/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /articles/free-e-book-download-compare-health-insurance-plans/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/frequently-asked-questions-about-health-savings-accounts/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/gap-in-benefits-due-to-early-retirement/
+          Target: /blog/save/early-retirement-health-insurance/
+          Status: '301'
+        - Source: /articles/health-and-wellness-information-resources/
+          Target: /blog/learn/health-and-wellness-information-resources/
+          Status: '301'
+        - Source: /articles/health-insurance-benefits-for-same-sex-married-couples/
+          Target: /blog/save/married-couple-health-insurance/
+          Status: '301'
+        - Source: /articles/health-insurance-deductible-101-obamacare/
+          Target: /blog/learn/health-insurance-deductible-101-obamacare/
+          Status: '301'
+        - Source: /articles/health-insurance-for-self-employed-people-startup-businesses/
+          Target: /blog/save/self-employed-health-insurance/
+          Status: '301'
+        - Source: /articles/health-insurance-special-enrollment-is-changing/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /articles/hispanics-remain-largest-uninsured-population-under-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /articles/how-can-i-save-money-on-health-insurance-in-2016/
+          Target: /blog/save/how-to-save-money-on-health-insurance/
+          Status: '301'
+        - Source: /articles/how-do-i-choose-the-best-health-insurance-company/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /articles/how-does-critical-illness-insurance-work/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /articles/how-does-dental-insurance-work-a-quick-primer/
+          Target: /blog/learn/how-does-dental-insurance-work-a-quick-primer/
+          Status: '301'
+        - Source: /articles/how-healthcare-sharing-ministries-work/
+          Target: /blog/aca/christian-health-insurance/
+          Status: '301'
+        - Source: /articles/how-long-do-i-need-short-term-health-insurance-coverage/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /articles/how-millennials-can-start-saving-for-the-future-with-hsas/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/how-much-does-a-dental-cleaning-cost-without-insurance/
+          Target: /blog/save/how-much-does-a-dental-cleaning-cost-without-insurance/
+          Status: '301'
+        - Source: /articles/how-much-will-obamacare-cost-you/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /articles/how-telemedicine-may-help-you-save-on-healthcare/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /articles/how-the-affordable-care-act-will-impact-individual-premium-rates-in-2014/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/how-the-obamacare-tax-penalty-works/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /articles/how-to-avoid-the-2016-obamacare-tax-penalty/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /articles/how-to-calculate-your-2014-obamacare-tax-credit/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/how-to-calculate-your-2015-obamacare-tax-credit/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/how-to-calculate-your-2016-obamacare-tax-credit/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/how-to-calculate-your-2016-obamacare-tax-credit-subsidy/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/how-to-calculate-your-2016-obamacare-tax-penalty/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /articles/how-to-choose-2016-health-benefits-in-5-streamlined-steps/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/how-to-create-personal-health-record/
+          Target: /blog/learn/how-to-create-personal-health-record/
+          Status: '301'
+        - Source: /articles/how-to-get-and-pay-for-healthcare-when-you-are-uninsured/
+          Target: /blog/save/no-health-insurance-ways-to-pay-for-healthcare/
+          Status: '301'
+        - Source: /articles/how-to-get-ready-for-2017-open-enrollment/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/how-to-pay-the-aca-tax-penalty/
+          Target: /
+          Status: '301'
+        - Source: /articles/how-to-switch-health-insurance-after-open-enrollment/
+          Target: /blog/aca/how-to-switch-health-insurance-after-open-enrollment/
+          Status: '301'
+        - Source: /articles/how-to-use-your-short-term-health-insurance-plan-benefits/
+          Target: /
+          Status: '301'
+        - Source: /articles/how-to-use-your-temporary-health-insurance-plan/
+          Target: /
+          Status: '301'
+        - Source: /articles/how-will-healthcare-mergers-affect-insurance-premiums/
+          Target: /
+          Status: '301'
+        - Source: /articles/i-cant-afford-my-obamacare-deductible-now-what/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /articles/i-dont-like-my-current-health-plan-what-are-my-options/
+          Target: /blog/aca/how-to-switch-health-insurance-after-open-enrollment/
+          Status: '301'
+        - Source: /articles/i-get-an-obamacare-subsidy-what-should-i-do-if-my-income-changes-in-2016/
+          Target: /blog/aca/obamacare-subsidy-income-change/
+          Status: '301'
+        - Source: /articles/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /articles/i-missed-open-enrollment-can-i-still-enroll/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /articles/i-need-health-insurance-now-temporary-economical-option-benefits-until-jan-1/
+          Target: /blog/save/need-health-insurance-now/
+          Status: '301'
+        - Source: /articles/i-want-to-break-up-with-my-health-insurance-switch-plans/
+          Target: /blog/aca/how-to-switch-health-insurance-after-open-enrollment/
+          Status: '301'
+        - Source: /articles/if-you-missed-open-enrollment/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /articles/IHC-Group-focus-on-short-term-insurance/
+          Target: /about-us/
+          Status: '301'
+        - Source: /articles/in-between-jobs-benefits-short-term-health-insurance-plan/
+          Target: /blog/save/unemployed-health-insurance/
+          Status: '301'
+        - Source: /articles/independence-holding-coo-company-reinventing-itself-due-to-health-reform/
+          Target: /about-us/
+          Status: '301'
+        - Source: /articles/infographic-2016-obamacare-open-enrollment-checklist/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/infographic-charlotte-lowest-cost-obamacare-premium-buy/
+          Target: /
+          Status: '301'
+        - Source: /articles/infographic-columbus-lowest-cost-obamacare-premium/
+          Target: /
+          Status: '301'
+        - Source: /articles/infographic-how-hospital-indemnity-plans-help-lessen-the-impact-of-out-of-pocket-healthcare-expenses/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/infographic-obamacare-open-enrollment-checklist-2017/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/infographic-obamacare-premium-hikes-in-tampa-florida/
+          Target: /
+          Status: '301'
+        - Source: /articles/infographic-obamacare-subsidy-eligibility/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/infographic-october-2016-obamacare-open-enrollment-checklist-6-ways-you-can-prepare/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/infographic-the-obamacare-coverage-gap-map/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /articles/infographic-which-non-aca-health-plan-is-right-for-me/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/insurance-for-20-somethings-under-the-affordable-care-act/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /articles/insurance-terminology-101/
+          Target: /glossary/
+          Status: '301'
+        - Source: /articles/insurance-terminology-obamacare/
+          Target: /glossary/
+          Status: '301'
+        - Source: /articles/is-a-hospital-indemnity-plan-right-for-you/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/is-an-individual-major-medical-health-insurance-plan-right-for-you/
+          Target: /blog/learn/is-an-individual-major-medical-health-insurance-plan-right-for-you/
+          Status: '301'
+        - Source: /articles/is-critical-illness-insurance-worth-it/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /articles/is-medical-gap-insurance-worth-it/
+          Target: /blog/save/is-medical-gap-insurance-worth-it/
+          Status: '301'
+        - Source: /articles/is-my-plan-safe-which-health-insurance-co-ops-are-still-in-business/
+          Target: /blog/aca/reasons-your-health-plan-may-be-cancelled/
+          Status: '301'
+        - Source: /articles/is-pediatric-dental-coverage-required-under-obamacare/
+          Target: /blog/learn/family-dental-insurance-kids-and-adults/
+          Status: '301'
+        - Source: /articles/is-short-term-health-insurance-enough-2-plans-to-supplement-your-temporary-benefits/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /articles/is-temporary-health-insurance-right-for-you/
+          Target: /blog/save/why-buy-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/is-the-obamacare-smoking-penalty-working/
+          Target: /
+          Status: '301'
+        - Source: /articles/is-there-obamacare-in-2017/
+          Target: /blog/aca/individual-mandate-repeal/
+          Status: '301'
+        - Source: /articles/is-there-still-obamacare-questions-answered/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/just-got-dental-insurance-heres-what-to-do/
+          Target: /blog/learn/how-does-dental-insurance-work-a-quick-primer/
+          Status: '301'
+        - Source: /articles/king-v-burwell-decision-could-have-far-reaching-impact-on-consumers-health-insurance-industry/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/lets-get-local-what-is-affordable-health-insurance-in-dallas-tx/
+          Target: /
+          Status: '301'
+        - Source: /articles/looking-for-prescription-drug-discounts-5-reasons-to-have-an-rx-pay-card/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /articles/looking-for-supplemental-insurance-to-pair-with-your-major-medical-plan-the-ihc-group-has-you-covered/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /articles/looking-for-ways-to-save-on-healthcare-in-retirement-6-reasons-gen-x-baby-boomers-should-consider-an-hsa/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/managing-employee-high-deductible-health-plan-group-gap/
+          Target: /blog/save/cant-afford-employer-health-insurance/
+          Status: '301'
+        - Source: /articles/metal-gap-121614/
+          Target: /blog/save/is-medical-gap-insurance-worth-it/
+          Status: '301'
+        - Source: /articles/metal-gap-economical-easy-enrollment-friendly/
+          Target: /blog/save/no-health-insurance-ways-to-pay-for-healthcare/
+          Status: '301'
+        - Source: /articles/metal-gap-insurance-helps-you-manage-expenses-of-high-deductibles-coinsurance-co-payments-and-other-out-of-pocket-costs/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /articles/missed-the-jan-15-obamacare-deadline-what-now/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /articles/mouthguards-back-to-school/
+          Target: /
+          Status: '301'
+        - Source: /articles/moving-your-health-plan/
+          Target: /blog/learn/moving-your-health-plan/
+          Status: '301'
+        - Source: /articles/nearing-retirement-how-buying-critical-illness-insurance-may-protect-your-savings/
+          Target: /blog/save/early-retirement-health-insurance/
+          Status: '301'
+        - Source: /articles/need-help-understanding-health-insurance/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /articles/need-short-term-insurance-coverage-deadline/
+          Target: /blog/news/federal-ruling-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/networking-101-health-insurance-hmos-ppos-epos/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /articles/new-rules-may-limit-your-short-term-coverage-plans/
+          Target: /blog/news/federal-ruling-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/no-health-insurance-coverage/
+          Target: /blog/aca/no-health-insurance-coverage/
+          Status: '301'
+        - Source: /articles/no-health-insurance-ways-to-pay-for-healthcare/
+          Target: /blog/save/no-health-insurance-ways-to-pay-for-healthcare/
+          Status: '301'
+        - Source: /articles/no-obamacare-open-enrollment-for-pregnant-women-says-department-of-health-and-human-services/
+          Target: /
+          Status: '301'
+        - Source: /articles/non-subsidy-eligible-obamacare-alternatives/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /articles/not-up-for-debate-trump-admin-final-rule-obamacare/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/obamacare-and-taxes-be-ready-for-april-15/
+          Target: /
+          Status: '301'
+        - Source: /articles/obamacare-buyers-remorse/
+          Target: /blog/aca/how-to-switch-health-insurance-after-open-enrollment/
+          Status: '301'
+        - Source: /articles/obamacare-cost-sharing-reduction-subsidies/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/obamacare-deadline-reminder-enroll-by-11-59-pm-on-december-15/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/obamacare-exemptions/
+          Target: /blog/aca/obamacare-exemptions/
+          Status: '301'
+        - Source: /articles/obamacare-family-glitch-impact/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /articles/obamacare-metal-plans/
+          Target: /blog/aca/obamacare-metal-plans/
+          Status: '301'
+        - Source: /articles/obamacare-metal-plans---what-they-are-how-they-work/
+          Target: /blog/aca/obamacare-metal-plans/
+          Status: '301'
+        - Source: /articles/obamacare-metal-plans-what-they-are-how-they-work/
+          Target: /blog/aca/obamacare-metal-plans/
+          Status: '301'
+        - Source: /articles/obamacare-penalty-repeal/
+          Target: /blog/aca/no-health-insurance-coverage/
+          Status: '301'
+        - Source: /articles/obamacare-penalty-repeal-2017/
+          Target: /blog/aca/individual-mandate-repeal/
+          Status: '301'
+        - Source: /articles/one-necessity-for-any-millennial-starting-a-new-business/
+          Target: /blog/learn/is-an-individual-major-medical-health-insurance-plan-right-for-you/
+          Status: '301'
+        - Source: /articles/one-way-to-use-your-tax-refund-wisely-buy-a-dental-insurance-plan/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /articles/open-enrollment-phoenix-health-insurance-premiums/
+          Target: /
+          Status: '301'
+        - Source: /articles/open-enrollment-whats-new/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/out-with-obamacare-affordable-care-act/
+          Target: /blog/aca/individual-mandate-repeal/
+          Status: '301'
+        - Source: /articles/pet-insurance-has-a-longer-history-is-more-affordable-than-you-think/
+          Target: /
+          Status: '301'
+        - Source: /articles/podcast-what-are-narrow-networks/
+          Target: /blog/learn/narrow-networks/
+          Status: '301'
+        - Source: /articles/podcast-what-is-a-drug-formulary/
+          Target: /
+          Status: '301'
+        - Source: /articles/podcast-what-should-you-do-when-you-cant-afford-your-health-plan/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /articles/pre-verification-required/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /articles/put-some-heart-into-your-health-benefits/
+          Target: /blog/learn/heart-attack-insurance/
+          Status: '301'
+        - Source: /articles/quiz-how-short-term-health-insurance-savvy-are-you/
+          Target: /blog/save/why-buy-short-term-health-insurance/
+          Status: '301'
+        - Source: /articles/reminder-update-your-income-to-keep-your-obamacare-subsidy-current/
+          Target: /blog/aca/obamacare-subsidy-income-change/
+          Status: '301'
+        - Source: /articles/risk-adjustment-payment-freeze/
+          Target: /
+          Status: '301'
+        - Source: /articles/root-canals-what-they-cost-how-to-pay-and-the-best-way-to-save-on-one/
+          Target: /blog/learn/dental-procedure-costs/
+          Status: '301'
+        - Source: /articles/rx-pay-card-discounts-prescription-drug-costs/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /articles/save-money-with-obamacare-tax-credits-and-subsidies/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/short-term-health-insurance-an-option-if-you-miss-the-obamacare-special-enrollment-period-deadline/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /articles/short-term-health-insurance-pros-cons/
+          Target: /blog/save/short-term-health-insurance-pros-cons/
+          Status: '301'
+        - Source: /articles/short-term-health-plans-cover-preexisting-conditions/
+          Target: /blog/news/aca-pre-existing-conditions-coverage/
+          Status: '301'
+        - Source: /articles/short-term-medical-a-smart-choice-for-new-graduates-without-major-medical-health-insurance/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /articles/short-term-medical-insurance-012115/
+          Target: /about-us/
+          Status: '301'
+        - Source: /articles/short-term-medical-vs-temporary-medical-insurance/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /articles/should-i-buy-a-dental-insurance-plan-from-an-obamacare-exchange-or-in-the-private-marketplace/
+          Target: /blog/aca/private-or-exchange-dental-insurance/
+          Status: '301'
+        - Source: /articles/should-i-buy-from-healthedeals-where-to-find-reviews-and-ratings/
+          Target: /about-us/
+          Status: '301'
+        - Source: /articles/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Target: /blog/aca/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Status: '301'
+        - Source: /articles/should-i-keep-my-grandfathered-health-plan-in-2016/
+          Target: /blog/aca/grandfathered-health-plans/
+          Status: '301'
+        - Source: /articles/should-you-let-your-health-plan-renew-in-2016/
+          Target: /blog/aca/renew-health-insurance/
+          Status: '301'
+        - Source: /articles/small-employers-move-from-group-to-individual/
+          Target: /
+          Status: '301'
+        - Source: /articles/stop-avoiding-this-testcolonoscopies-save-lives/
+          Target: /blog/learn/stop-avoiding-this-test-colonoscopies-save-lives/
+          Status: '301'
+        - Source: /articles/subsidies-tips-using-calculator/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /articles/summer-health-insurance-options-for-the-uninsured/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /articles/take-the-sting-out-of-steep-healthcare-spending-in-2016/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /articles/tax-freedom-day-health-savings-account/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/temporary-health-insurance-an-option-for-young-adults-and-students-in-between-aca-compliant-plans/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /articles/temporary-health-insurance-is-easy-option-for-employers-with-seasonal-workers/
+          Target: /blog/save/independent-contractor-health-insurance/
+          Status: '301'
+        - Source: /articles/the-differences-between-stm-and-obamacare/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /articles/the-obamacare-term-that-might-make-you-shudder/
+          Target: /blog/news/aca-pre-existing-conditions-coverage/
+          Status: '301'
+        - Source: /articles/tips-seasonal-stress-health-insurance-shopping/
+          Target: /
+          Status: '301'
+        - Source: /articles/top-10-reasons-to-try-telemedicine/
+          Target: /blog/learn/what-is-telemedicine/
+          Status: '301'
+        - Source: /articles/top-3-tips-for-buying-health-insurance/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/top-supplemental-insurance-options-for-those-without-employer-benefits/
+          Target: /blog/save/independent-contractor-health-insurance/
+          Status: '301'
+        - Source: /articles/trump-executive-order-on-obamacare/
+          Target: /blog/aca/individual-mandate-repeal/
+          Status: '301'
+        - Source: /articles/unemployed-health-insurance-options/
+          Target: /blog/save/unemployed-health-insurance/
+          Status: '301'
+        - Source: /articles/uninsured-until-the-end-of-2015-short-term-health-insurance-is-an-option/
+          Target: /blog/save/independent-contractor-health-insurance/
+          Status: '301'
+        - Source: /articles/uninsured-wont-fly-under-the-radar-during-2017-open-enrollment/
+          Target: /
+          Status: '301'
+        - Source: /articles/waiting-it-out/
+          Target: /blog/save/need-health-insurance-now/
+          Status: '301'
+        - Source: /articles/what-are-acarequired-essential-health-benefits/
+          Target: /blog/aca/what-are-aca-required-essential-health-benefits/
+          Status: '301'
+        - Source: /articles/what-are-cost-sharing-reductions-meet-obamacares-other-subsidy/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/what-are-qualifying-life-events-for-health-insurance-special-enrollment/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /articles/what-are-the-obamacare-income-limits-for-2016-health-insurance-subsidies/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/what-can-i-do-if-obamacare-is-too-expensive/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /articles/what-does-short-term-health-insurance-cover/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /articles/what-happens-if-i-dont-have-health-insurance-in-2016/
+          Target: /blog/aca/no-health-insurance-coverage/
+          Status: '301'
+        - Source: /articles/what-happens-if-i-miscalculated-my-2015-obamacare-tax-credit/
+          Target: /blog/aca/obamacare-subsidy-income-change/
+          Status: '301'
+        - Source: /articles/what-happens-if-i-missed-my-obamacare-premium-payment/
+          Target: /blog/save/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Status: '301'
+        - Source: /articles/what-if-you-owe-an-obamacare-tax-penalty/
+          Target: /
+          Status: '301'
+        - Source: /articles/what-immunizations-are-covered-by-obamacare-insurance/
+          Target: /blog/aca/what-preventive-services-are-covered-by-obamacare/
+          Status: '301'
+        - Source: /articles/what-is-a-fixed-indemnity-health-plan/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/what-is-a-hospital-indemnity-plan/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/what-is-a-mec-health-plan/
+          Target: /blog/aca/what-is-a-mec-health-plan/
+          Status: '301'
+        - Source: /articles/what-is-a-short-term-ppo-temporary-health-benefits-with-copays-more/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /articles/what-is-affordable-health-insurance-in-atlanta-ga/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/what-is-affordable-health-insurance-in-nashville-tn/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/what-is-affordable-health-insurance-in-phoenix-az/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/what-is-health-insurance-and-how-does-it-work/
+          Target: /blog/learn/what-is-health-insurance-and-how-does-it-work/
+          Status: '301'
+        - Source: /articles/what-is-short-term-medical-insurance/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /articles/what-is-short-term-medical-insurance/
+          Target: /blog/save/what-is-short-term-medical-insurance
+          Status: '301'
+        - Source: /articles/what-is-the-best-health-insurance-for-recent-college-grads/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /articles/what-is-the-obamacare-penalty-this-year/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /articles/what-life-events-qualify-me-for-a-special-enrollment-period/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /articles/what-makes-obamacare-affordable/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /articles/what-preventive-services-are-covered-by-obamacare/
+          Target: /blog/aca/what-preventive-services-are-covered-by-obamacare/
+          Status: '301'
+        - Source: /articles/what-to-do-if-your-child-knocks-out-chips-a-tooth/
+          Target: /
+          Status: '301'
+        - Source: /articles/what-to-do-if-your-co-op-goes-out-of-business/
+          Target: /blog/aca/reasons-your-health-plan-may-be-cancelled/
+          Status: '301'
+        - Source: /articles/what-type-of-health-insurance-plans-are-available-in-2014/
+          Target: /
+          Status: '301'
+        - Source: /articles/what-type-of-health-insurance-plans-are-available-in-2015/
+          Target: /
+          Status: '301'
+        - Source: /articles/whats-a-hospital-indemnity-plan/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/whats-the-difference-between-the-doctors-office-urgent-care-and-the-retail-walk-in-clinic/
+          Target: /blog/save/whats-the-difference-between-the-doctors-office-urgent-care-and-the-retail-walk-in-clinic/
+          Status: '301'
+        - Source: /articles/when-is-2016-open-enrollment/
+          Target: /
+          Status: '301'
+        - Source: /articles/when-preventive-care-leads-to-medical-bills/
+          Target: /
+          Status: '301'
+        - Source: /articles/when-will-king-v-burwell-be-decided-whats-next-for-obamacare/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/where-to-shop-by-state-find-your-obamacare-health-insurance-website/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /articles/which-dental-insurance-is-best-for-me/
+          Target: /blog/save/which-dental-insurance-is-best-for-me/
+          Status: '301'
+        - Source: /articles/who-are-the-remaining-uninsured-americans/
+          Target: /blog/learn/who-are-the-remaining-uninsured-americans/
+          Status: '301'
+        - Source: /articles/who-sells-short-term-health-insurance/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /articles/why-dont-i-qualify-for-an-obamacare-tax-credit/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/why-hospital-indemnity/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /articles/why-should-i-choose-an-hsa-plan-during-workplace-open-enrollment/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/why-you-should-have-a-personal-health-record/
+          Target: /blog/learn/why-you-should-have-a-personal-health-record/
+          Status: '301'
+        - Source: /articles/will-health-insurance-cover-my-child-at-summer-camp/
+          Target: /blog/learn/child-only-health-insurance/
+          Status: '301'
+        - Source: /articles/will-my-health-insurance-premium-go-up-in-2016/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/will-obamacare-health-insurance-subsidies-be-available-in-2016/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /articles/will-open-enrollment-be-extended/
+          Target: /
+          Status: '301'
+        - Source: /articles/will-your-health-insurance-company-raise-rates-in-2016/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /articles/without-coverage-top-5-reasons-to-buy-short-term-health-insurance/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /articles/womens-health-preventive-care-at-every-age-benefits/
+          Target: /blog/aca/what-preventive-services-are-covered-by-obamacare/
+          Status: '301'
+        - Source: /articles/you-should-open-an-hsa-health-savings-account/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /articles/you-still-have-time-to-sign-up-for-the-2015-obamacare-special-open-enrollment-period-which-ends-april-30/
+          Target: /
+          Status: '301'
+        - Source: /articles/your-guide-to-choosing-short-term-medical-insurance-coverage/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/your-guide-to-dental-insurance-terms/
+          Target: /glossary/
+          Status: '301'
+        - Source: /articles/your-guide-to-the-federal-poverty-level/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /articles/your-obamacare-checkup/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /articles/your-ultimate-guide-to-health-insurance-terms/
+          Target: /glossary/
+          Status: '301'
+        - Source: /author/cathy-jakicic/page/1/
+          Target: /blog/
+          Status: '301'
+        - Source: /author/deb-shields/page/1/
+          Target: /blog/
+          Status: '301'
+        - Source: /author/jenifer/page/1/
+          Target: /blog/
+          Status: '301'
+        - Source: /author/sarah/page/1/
+          Target: /blog/
+          Status: '301'
+        - Source: /blog/3-alternatives-to-buying-health-insurance-from-obamacare-exchanges/
+          Target: /blog/aca/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Status: '301'
+        - Source: /blog/3-health-insurance-alternatives-to-cobra/
+          Target: /blog/save/unemployed-health-insurance/
+          Status: '301'
+        - Source: /blog/3-reasons-you-might-rethink-health-insurance-automatic-renewal-for-2015/
+          Target: /blog/aca/renew-health-insurance/
+          Status: '301'
+        - Source: /blog/4-health-insurance-options-for-students-losing-benefits/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /blog/5-tips-for-choosing-the-right-obamacare-health-insurance-plan/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/5-top-healthcare-and-medical-blogs/
+          Target: /blog/learn/best-healthcare-and-medical-blogs/
+          Status: '301'
+        - Source: /blog/aca-provision-means-higher-premiums-for-young-americans-2/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /blog/aca/2018-aca-health-insurance-rates-atlanta-ga/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/2018-aca-health-insurance-rates-nashville-tn/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/2018-aca-health-insurance-rates-phoenix-az/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/3-reasons-your-health-plan-may-be-cancelled/
+          Target: /blog/aca/reasons-your-health-plan-may-be-cancelled/
+          Status: '301'
+        - Source: /blog/aca/5-tips-for-choosing-the-right-obamacare-health-insurance-plan/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/aca/5-types-of-obamacare-health-plan-application-help/
+          Target: /blog/aca/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Status: '301'
+        - Source: /blog/aca/a-brief-guide-to-obamacare-health-insurance-for-latinos/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/a-quick-look-at-2018-aca-health-insurance-rates-in-dallas-tx/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/aca-subsidy-income-limits/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /blog/aca/aca-tax-credit-dont-qualify/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /blog/aca/ask-frank-can-employers-pay-obamacare-premiums/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/aca/avoid-the-aca-tax-penalty/
+          Target: /blog/aca/calculate-aca-tax-penalty/
+          Status: '301'
+        - Source: /blog/aca/can-an-employer-pay-for-an-employees-exchange-health-insurance-plan/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/aca/competition-choice-dwindle-as-aetna-and-others-exit-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/do-i-need-dental-insurance-if-i-have-obamacare/
+          Target: /blog/aca/obamacare-dental-insurance/
+          Status: '301'
+        - Source: /blog/aca/do-immigrants-qualify-for-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/employer-cancels-health-insurance/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/aca/faith-based-healthcare-coverage-under-the-aca/
+          Target: /blog/aca/christian-health-insurance/
+          Status: '301'
+        - Source: /blog/aca/get-health-insurance-after-open-enrollment/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /blog/aca/health-insurance-for-healthy-people/
+          Target: /blog/learn/do-you-need-health-insurance/
+          Status: '301'
+        - Source: /blog/aca/health-insurance-waiting-period/
+          Target: /blog/save/need-health-insurance-now/
+          Status: '301'
+        - Source: /blog/aca/hispanics-remain-largest-uninsured-population-under-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/how-healthcare-sharing-ministries-work/
+          Target: /blog/aca/christian-health-insurance/
+          Status: '301'
+        - Source: /blog/aca/how-to-calculate-your-obamacare-tax-credit-subsidy/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /blog/aca/how-to-choose-2016-health-benefits-in-5-streamlined-steps/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/aca/infographic-charlotte-lowest-cost-obamacare-premium-buy/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/infographic-columbus-lowest-cost-obamacare-premium/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/infographic-obamacare-premium-hikes-in-tampa-florida/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/infographic-the-obamacare-coverage-gap-map/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /blog/aca/is-pediatric-dental-coverage-required-under-obamacare/
+          Target: /blog/learn/family-dental-insurance-kids-and-adults/
+          Status: '301'
+        - Source: /blog/aca/lets-get-local-what-is-affordable-health-insurance-in-dallas-tx/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/obamacare-family-glitch-impact/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/aca/obamacare-too-expensive/
+          Target: /blog/save/obamacare-health-insurance-alternatives
+          Status: '301'
+        - Source: /blog/aca/obamacare-too-expensive/
+          Target: /blog/save/obamacare-health-insurance-alternatives
+          Status: '301'
+        - Source: /blog/aca/open-enrollment-2019-rate-changes/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /blog/aca/open-enrollment-phoenix-health-insurance-premiums/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/reminder-update-your-income-to-keep-your-obamacare-subsidy-current/
+          Target: /blog/aca/obamacare-subsidy-income-change/
+          Status: '301'
+        - Source: /blog/aca/should-i-buy-a-dental-insurance-plan-from-an-obamacare-exchange-or-in-the-private-marketplace/
+          Target: /blog/aca/private-or-exchange-dental-insurance/
+          Status: '301'
+        - Source: /blog/aca/should-i-keep-my-grandfathered-health-plan-in-2016/
+          Target: /blog/aca/grandfathered-health-plans/
+          Status: '301'
+        - Source: /blog/aca/subsidy-results/
+          Target: /blog/aca/what-to-do-if-you-qualify-for-an-aca-subsidy/
+          Status: '301'
+        - Source: /blog/aca/the-obamacare-term-that-might-make-you-shudder/
+          Target: /blog/news/aca-pre-existing-conditions-coverage/
+          Status: '301'
+        - Source: /blog/aca/what-happens-if-i-miscalculated-my-2015-obamacare-tax-credit/
+          Target: /blog/aca/obamacare-subsidy-income-change/
+          Status: '301'
+        - Source: /blog/aca/what-if-you-owe-an-obamacare-tax-penalty/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/what-is-affordable-health-insurance-in-atlanta-ga/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /blog/aca/what-is-affordable-health-insurance-in-nashville-tn/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /blog/aca/what-is-affordable-health-insurance-in-phoenix-az/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        # - Source: /blog/aca/what-to-do-if-you-dont-qualify-for-an-aca-subsidy/
+        #   Target: /blog/aca/what-to-do-if-you-dont-qualify-for-an-aca-subsidy/
+        #   Status: '301'
+        - Source: /blog/aca/your-health-plan-options-without-obamacare/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /blog/accident/fall-risk/
+          Target: /blog/learn/fall-risk/
+          Status: '301'
+        - Source: /blog/accident/what-is-accident-insurance/
+          Target: /blog/learn/what-is-accident-insurance/
+          Status: '301'
+        - Source: /blog/ask-an-advisor-can-a-self-employed-spouse-buy-from-an-exchange-and-receive-a-tax-subsidy/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/ask-an-advisor-why-did-my-health-insurance-get-cancelled/
+          Target: /blog/save/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Status: '301'
+        - Source: /blog/can-an-employer-pay-for-an-employees-exchange-health-insurance-plan/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/critical-illness-health-insurance/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /blog/critical-illness/cancer-insurance/
+          Target: /blog/learn/cancer-insurance/
+          Status: '301'
+        - Source: /blog/critical-illness/does-health-insurance-cover-skin-cancer-screening/
+          Target: /blog/learn/does-health-insurance-cover-skin-cancer-screening/
+          Status: '301'
+        - Source: /blog/critical-illness/heart-attack-insurance/
+          Target: /blog/learn/heart-attack-insurance/
+          Status: '301'
+        - Source: /blog/critical-illness/kidney-disease-cost/
+          Target: /blog/learn/kidney-disease-cost/
+          Status: '301'
+        - Source: /blog/critical-illness/stroke-risk-and-costs/
+          Target: /blog/learn/stroke-risk-and-costs/
+          Status: '301'
+        - Source: /blog/critical-illness/what-is-critical-illness-insurance/
+          Target: /blog/learn/what-is-critical-illness-insurance/
+          Status: '301'
+        - Source: /blog/dental/dental-insurance-for-seniors/
+          Target: /blog/learn/dental-insurance-for-seniors/
+          Status: '301'
+        - Source: /blog/dental/dental-procedure-costs/
+          Target: /blog/learn/dental-procedure-costs/
+          Status: '301'
+        - Source: /blog/dental/family-dental-insurance-kids-and-adults/
+          Target: /blog/learn/family-dental-insurance-kids-and-adults/
+          Status: '301'
+        - Source: /blog/dental/how-does-dental-insurance-work-a-quick-primer/
+          Target: /blog/learn/how-does-dental-insurance-work-a-quick-primer/
+          Status: '301'
+        - Source: /blog/dental/how-much-do-braces-cost/
+          Target: /blog/learn/how-much-do-braces-cost/
+          Status: '301'
+        - Source: /blog/dental/how-much-do-dentures-cost/
+          Target: /blog/learn/how-much-do-dentures-cost/
+          Status: '301'
+        - Source: /blog/dental/how-much-does-a-dental-cleaning-cost-without-insurance/
+          Target: /blog/save/how-much-does-a-dental-cleaning-cost-without-insurance/
+          Status: '301'
+        - Source: /blog/dental/is-dental-insurance-worth-it/
+          Target: /blog/learn/is-dental-insurance-worth-it/
+          Status: '301'
+        - Source: /blog/dental/private-or-exchange-dental-insurance/
+          Target: /blog/aca/private-or-exchange-dental-insurance/
+          Status: '301'
+        - Source: /blog/dental/which-dental-insurance-is-best-for-me/
+          Target: /blog/save/which-dental-insurance-is-best-for-me/
+          Status: '301'
+        - Source: /blog/do-hospital-indemnity-plans-require-in-network-care/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/do-immigrants-qualify-for-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /blog/health-insurance/5-easy-ways-to-reduce-health-care-costs/
+          Target: /blog/save/5-easy-ways-to-reduce-health-care-costs/
+          Status: '301'
+        - Source: /blog/health-insurance/are-health-insurance-premiums-deductible/
+          Target: /blog/learn/are-health-insurance-premiums-deductible/
+          Status: '301'
+        - Source: /blog/health-insurance/are-you-underinsured/
+          Target: /blog/learn/are-you-underinsured/
+          Status: '301'
+        - Source: /blog/health-insurance/cancel-health-insurance/
+          Target: /blog/aca/cancel-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/cheap-health-insurance/
+          Target: /blog/save/cheap-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/christian-health-insurance/
+          Target: /blog/aca/christian-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/college-student-health-insurance/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/covid-19-state-resources-guide/
+          Target: /blog/news/covid-19-state-resources-guide/
+          Status: '301'
+        - Source: /blog/health-insurance/early-retirement-health-insurance/
+          Target: /blog/save/early-retirement-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/family-health-insurance/
+          Target: /blog/save/family-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/finding-a-licensed-health-insurance-agent/
+          Target: /blog/learn/finding-a-licensed-health-insurance-agent/
+          Status: '301'
+        - Source: /blog/health-insurance/health-insurance-cards/
+          Target: /blog/learn/health-insurance-cards/
+          Status: '301'
+        - Source: /blog/health-insurance/health-insurance-coverage-gaps/
+          Target: /blog/learn/health-insurance-coverage-gaps/
+          Status: '301'
+        - Source: /blog/health-insurance/health-reimbursement-arrangements/
+          Target: /blog/aca/health-reimbursement-arrangements/
+          Status: '301'
+        - Source: /blog/health-insurance/high-deductible-health-plan-help/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /blog/health-insurance/hmo-vs-ppo/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /blog/health-insurance/how-much-does-health-insurance-cost/
+          Target: /blog/save/how-much-does-health-insurance-cost/
+          Status: '301'
+        - Source: /blog/health-insurance/how-to-choose-health-insurance/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/how-to-dispute-a-medical-bill/
+          Target: /blog/save/how-to-dispute-a-medical-bill/
+          Status: '301'
+        - Source: /blog/health-insurance/how-to-find-a-primary-care-physician/
+          Target: /blog/learn/how-to-find-a-primary-care-physician/
+          Status: '301'
+        - Source: /blog/health-insurance/how-to-save-money-on-health-insurance/
+          Target: /blog/save/how-to-save-money-on-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/hsa-insurance/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/independent-contractor-health-insurance/
+          Target: /blog/save/independent-contractor-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/is-medical-gap-insurance-worth-it/
+          Target: /blog/save/is-medical-gap-insurance-worth-it/
+          Status: '301'
+        - Source: /blog/health-insurance/married-couple-health-insurance/
+          Target: /blog/save/married-couple-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/moving-your-health-plan/
+          Target: /blog/learn/moving-your-health-plan/
+          Status: '301'
+        - Source: /blog/health-insurance/narrow-networks/
+          Target: /blog/learn/narrow-networks/
+          Status: '301'
+        - Source: /blog/health-insurance/need-health-insurance-now/
+          Target: /blog/save/need-health-insurance-now/
+          Status: '301'
+        - Source: /blog/health-insurance/no-health-insurance-ways-to-pay-for-healthcare/
+          Target: /blog/save/no-health-insurance-ways-to-pay-for-healthcare/
+          Status: '301'
+        - Source: /blog/health-insurance/rural-healthcare/
+          Target: /blog/learn/rural-healthcare/
+          Status: '301'
+        - Source: /blog/health-insurance/self-employed-health-insurance/
+          Target: /blog/save/self-employed-health-insurance/
+          Status: '301'
+        - Source: /blog/health-insurance/what-is-a-mec-health-plan/
+          Target: /blog/aca/what-is-a-mec-health-plan/
+          Status: '301'
+        - Source: /blog/health-insurance/what-is-health-insurance-and-how-does-it-work/
+          Target: /blog/learn/what-is-health-insurance-and-how-does-it-work/
+          Status: '301'
+        - Source: /blog/health-insurance/what-is-telemedicine/
+          Target: /blog/learn/what-is-telemedicine/
+          Status: '301'
+        - Source: /blog/health-insurance/what-is-the-difference-between-coinsurance-copay-deductible/
+          Target: /blog/learn/what-is-the-difference-between-coinsurance-copay-deductible/
+          Status: '301'
+        - Source: /blog/health-insurance/who-are-the-remaining-uninsured-americans/
+          Target: /blog/learn/who-are-the-remaining-uninsured-americans/
+          Status: '301'
+        - Source: /blog/health-insurance/why-is-healthcare-so-expensive/
+          Target: /blog/save/why-is-healthcare-so-expensive/
+          Status: '301'
+        - Source: /blog/health-tips/4-top-apps-for-organizing-your-medical-records/
+          Target: /blog/learn/4-top-apps-for-organizing-your-medical-records/
+          Status: '301'
+        - Source: /blog/health-tips/5-top-apps-to-help-you-sleep-better/
+          Target: /blog/learn/5-top-apps-to-help-you-sleep-better/
+          Status: '301'
+        - Source: /blog/health-tips/5-top-ios-and-android-apps-for-food-allergies-and-intolerances/
+          Target: /blog/learn/5-top-ios-and-android-apps-for-food-allergies-and-intolerances/
+          Status: '301'
+        - Source: /blog/health-tips/best-healthcare-and-medical-blogs/
+          Target: /blog/learn/best-healthcare-and-medical-blogs/
+          Status: '301'
+        - Source: /blog/health-tips/covid-19-and-flu-season/
+          Target: /blog/learn/covid-19-and-flu-season/
+          Status: '301'
+        - Source: /blog/health-tips/how-to-create-personal-health-record/
+          Target: /blog/learn/how-to-create-personal-health-record/
+          Status: '301'
+        - Source: /blog/health-tips/stop-avoiding-this-test-colonoscopies-save-lives/
+          Target: /blog/learn/stop-avoiding-this-test-colonoscopies-save-lives/
+          Status: '301'
+        - Source: /blog/health-tips/why-you-should-have-a-personal-health-record/
+          Target: /blog/learn/why-you-should-have-a-personal-health-record/
+          Status: '301'
+        - Source: /blog/hospital-indemnity/what-is-a-hospital-indemnity-plan/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/how-do-temporary-insurance-plan-networks-work/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /blog/learn/5-top-healthcare-and-medical-blogs/
+          Target: /blog/learn/best-healthcare-and-medical-blogs/
+          Status: '301'
+        - Source: /blog/learn/5-top-ways-to-find-a-reliable-health-insurance-carrier/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /blog/learn/6-tips-for-buying-health-insurance-online/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /blog/learn/a-brief-look-at-the-vaccine-debate/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/a-guide-to-available-health-insurance-premium-deductions-for-the-self-employed/
+          Target: /blog/learn/are-health-insurance-premiums-deductible/
+          Status: '301'
+        - Source: /blog/learn/deductible-dilemmas/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /blog/learn/dental-checkups-back-to-school/
+          Target: /blog/learn/family-dental-insurance-kids-and-adults/
+          Status: '301'
+        - Source: /blog/learn/free-e-book-download-compare-health-insurance-plans/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/learn/frequently-asked-questions-about-health-savings-accounts/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/learn/health-insurance-deductible-101-obamacare/attachment/deductible-infographic/
+          Target: /images/deductible-infographic.svg
+          Status: '301'
+        - Source: /blog/learn/how-do-i-choose-the-best-health-insurance-company/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /blog/learn/how-do-temporary-insurance-plan-networks-work/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /blog/learn/how-to-use-your-temporary-health-insurance-plan/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/just-got-dental-insurance-heres-what-to-do/
+          Target: /blog/learn/how-does-dental-insurance-work-a-quick-primer/
+          Status: '301'
+        - Source: /blog/learn/need-help-understanding-health-insurance/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /blog/learn/networking-101-health-insurance-hmos-ppos-epos/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /blog/learn/podcast-what-are-narrow-networks/
+          Target: /blog/learn/narrow-networks/
+          Status: '301'
+        - Source: /blog/learn/take-the-sting-out-of-steep-healthcare-spending-in-2016/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /blog/learn/what-happens-if-i-missed-my-obamacare-premium-payment/
+          Target: /blog/save/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Status: '301'
+        - Source: /blog/learn/what-is-a-fixed-indemnity-health-plan/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/learn/what-is-a-short-term-ppo-temporary-health-benefits-with-copays-more/
+          Target: /blog/learn/hmo-vs-ppo/
+          Status: '301'
+        - Source: /blog/learn/what-type-of-health-insurance-plans-are-available-in-2015/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/what-you-need-to-know-about-covid-19-and-flu-season/
+          Target: /blog/learn/covid-19-and-flu-season/
+          Status: '301'
+        - Source: /blog/learn/your-guide-to-choosing-short-term-medical-insurance-coverage/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/learn/your-obamacare-checkup/
+          Target: /blog/learn/how-to-choose-health-insurance/
+          Status: '301'
+        - Source: /blog/major-medical/0-premium-health-insurance-2021-covid-relief-bill/
+          Target: /blog/news/0-premium-health-insurance-2021-covid-relief-bill/
+          Status: '301'
+        - Source: /blog/major-medical/buy-health-insurance-online/
+          Target: /blog/learn/buy-health-insurance-online/
+          Status: '301'
+        - Source: /blog/major-medical/buying-individual-health-insurance-during-a-divorce/
+          Target: /blog/learn/buying-individual-health-insurance-during-a-divorce/
+          Status: '301'
+        - Source: /blog/major-medical/child-only-health-insurance/
+          Target: /blog/learn/child-only-health-insurance/
+          Status: '301'
+        - Source: /blog/major-medical/diabetes-costs/
+          Target: /blog/save/diabetes-costs/
+          Status: '301'
+        - Source: /blog/major-medical/do-you-need-health-insurance/
+          Target: /blog/learn/do-you-need-health-insurance/
+          Status: '301'
+        - Source: /blog/major-medical/does-my-health-insurance-cover-flu-shots/
+          Target: /blog/learn/does-my-health-insurance-cover-flu-shots/
+          Status: '301'
+        - Source: /blog/major-medical/employer-health-insurance-opt-out/
+          Target: /blog/learn/employer-health-insurance-opt-out/
+          Status: '301'
+        - Source: /blog/major-medical/get-health-insurance-now/
+          Target: /blog/learn/get-health-insurance-now/
+          Status: '301'
+        - Source: /blog/major-medical/health-insurance-for-coronavirus/
+          Target: /blog/news/health-insurance-for-coronavirus/
+          Status: '301'
+        - Source: /blog/major-medical/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /blog/major-medical/individual-health-insurance/
+          Target: /blog/learn/individual-health-insurance/
+          Status: '301'
+        - Source: /blog/major-medical/is-an-individual-major-medical-health-insurance-plan-right-for-you/
+          Target: /blog/learn/is-an-individual-major-medical-health-insurance-plan-right-for-you/
+          Status: '301'
+        - Source: /blog/major-medical/private-health-insurance/
+          Target: /blog/learn/private-health-insurance/
+          Status: '301'
+        - Source: /blog/major-medical/unemployed-health-insurance/
+          Target: /blog/save/unemployed-health-insurance/
+          Status: '301'
+        - Source: /blog/major-medical/whats-the-difference-between-the-doctors-office-urgent-care-and-the-retail-walk-in-clinic/
+          Target: /blog/save/whats-the-difference-between-the-doctors-office-urgent-care-and-the-retail-walk-in-clinic/
+          Status: '301'
+        - Source: /blog/major-medical/why-is-health-insurance-so-expensive/
+          Target: /blog/save/why-is-health-insurance-so-expensive/
+          Status: '301'
+        - Source: /blog/major-medical/will-your-health-insurance-cover-the-covid-19-vaccine/
+          Target: /blog/learn/will-your-health-insurance-cover-the-covid-19-vaccine/
+          Status: '301'
+        - Source: /blog/major-medical/young-adult-health-insurance/
+          Target: /blog/save/young-adult-health-insurance/
+          Status: '301'
+        - Source: /blog/marketplace-profile-oregon-s-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/maximum-obamacare-tax-penalty-for-being-uninsured-in-2014-announced/
+          Target: /blog/aca/individual-mandate-repeal/
+          Status: '301'
+        - Source: /blog/new-help-to-calculate-your-obamacare-health-insurance-costs-credits-in-2014/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /blog/news/california-eliminates-short-term-health-plans/
+          Target: /blog/save/short-term-health-insurance-state-duration-limits/
+          Status: '301'
+        - Source: /blog/news/covid-19-state-resources-guide///disclaimers//
+          Target: /terms/
+          Status: '301'
+        - Source: /blog/news/short-term-health-plans-cover-preexisting-conditions/
+          Target: /blog/news/aca-pre-existing-conditions-coverage/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-colorado/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-colorados-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-connecticut/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-connecticuts-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-federal-state-partnership-exchanges/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-hawaii/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-hawaiis-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-kentucky/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-kentuckys-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-maryland/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-marylands-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-massachusetts/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-massachusetts-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-nevada/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-nevadas-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-new-mexico/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-new-mexicos-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-new-york-state-s-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-rhode-island/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-rhode-islands-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-states-with-federal-facilitated-health-insurance-exchanges/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-the-district-of-columbia/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-the-district-of-columbias-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-vermont/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-vermonts-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-washington-state/
+          Target: /
+          Status: '301'
+        - Source: /blog/obamacare-marketplace-profile-washington-states-health-insurance-exchange/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-california/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-colorado/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-illinois/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-maryland/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-minnesota/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-new-york/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-texas/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/obamacare-state-update-washington/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/page/1/
+          Target: /blog/
+          Status: '301'
+        - Source: /blog/poll-shows-young-invincible-millennials-value-health-insurance-worry-about-cost/
+          Target: /blog/
+          Status: '301'
+        - Source: /blog/remember-not-all-states-rely-on-the-federal-website-for-obamacare-enrollment/
+          Target: /blog/aca/find-state-exchange-websites/
+          Status: '301'
+        - Source: /blog/remember-to-deduct-medical-expenses-on-tax-day/
+          Target: /blog/learn/are-health-insurance-premiums-deductible/
+          Status: '301'
+        - Source: /blog/save/11-ways-to-be-a-wise-healthcare-consumer/
+          Target: /blog/aca/i-just-bought-health-insurance-now-how-do-i-use-it/
+          Status: '301'
+        - Source: /blog/save/3-preventive-health-benefits-to-use-before-2016-open-enrollment/
+          Target: /
+          Status: '301'
+        - Source: /blog/save/3-supplemental-health-insurance-benefits-that-can-help-your-family-save-in-2016/
+          Target: /blog/learn/health-insurance-coverage-gaps/
+          Status: '301'
+        - Source: /blog/save/3-top-ways-to-deal-with-unexpected-medical-bills/
+          Target: /blog/save/how-to-dispute-a-medical-bill/
+          Status: '301'
+        - Source: /blog/save/3-valuable-discounts-to-look-for-in-your-next-dental-plan/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /blog/save/4-top-reasons-to-get-your-teeth-cleaned/
+          Target: /blog/save/how-much-does-a-dental-cleaning-cost-without-insurance/
+          Status: '301'
+        - Source: /blog/save/5-things-to-remember-about-your-hsa-account/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/save/6-month-health-insurance/
+          Target: /blog/news/federal-ruling-short-term-health-insurance/
+          Status: '301'
+        - Source: /blog/save/6-reasons-for-short-term-medical/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /blog/save/7-tips-for-understanding-and-negotiating-your-medical-bills/
+          Target: /blog/save/how-to-dispute-a-medical-bill/
+          Status: '301'
+        - Source: /blog/save/adult-dental-insurance-more-cost-friendly/
+          Target: /blog/aca/obamacare-dental-insurance/
+          Status: '301'
+        - Source: /blog/save/affordable-health-insurance-outside-open-enrollment/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /blog/save/are-hospital-indemnity-benefits-right-for-you/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/save/best-health-plan-dont-qualify-for-obamacare/
+          Target: /blog/save/best-short-term-health-insurance/
+          Status: '301'
+        - Source: /blog/save/beyond-major-medical-4-supplemental-health-plans-you-should-consider/
+          Target: /blog/learn/health-insurance-coverage-gaps/
+          Status: '301'
+        - Source: /blog/save/dental-insurance-is-prudent/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /blog/save/dont-live-in-a-bubble-a-plan-to-help-with-high-deductibles/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        # - Source: /blog/save/family-health-insurance/
+        #   Target: /blog/save/family-health-insurance/
+        #   Status: '301'
+        - Source: /blog/save/health-insurance-benefits-for-same-sex-married-couples/
+          Target: /blog/save/married-couple-health-insurance/
+          Status: '301'
+        - Source: /blog/save/how-can-i-save-money-on-health-insurance-in-2016/
+          Target: /blog/save/how-to-save-money-on-health-insurance/
+          Status: '301'
+        - Source: /blog/save/how-millennials-can-start-saving-for-the-future-with-hsas/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/save/how-telemedicine-may-help-you-save-on-healthcare/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /blog/save/how-to-get-and-pay-for-healthcare-when-you-are-uninsured/
+          Target: /blog/save/no-health-insurance-ways-to-pay-for-healthcare/
+          Status: '301'
+        - Source: /blog/save/i-need-health-insurance-now-temporary-economical-option-benefits-until-jan-1/
+          Target: /blog/save/need-health-insurance-now/
+          Status: '301'
+        - Source: /blog/save/infographic-how-hospital-indemnity-plans-help-lessen-the-impact-of-out-of-pocket-healthcare-expenses/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/save/international-student-health-insurance/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /blog/save/is-short-term-health-insurance-enough-2-plans-to-supplement-your-temporary-benefits/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /blog/save/is-temporary-health-insurance-right-for-you/
+          Target: /blog/save/why-buy-short-term-health-insurance/
+          Status: '301'
+        - Source: /blog/save/looking-for-prescription-drug-discounts-5-reasons-to-have-an-rx-pay-card/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /blog/save/looking-for-ways-to-save-on-healthcare-in-retirement-6-reasons-gen-x-baby-boomers-should-consider-an-hsa/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/save/managing-employee-high-deductible-health-plan-group-gap/
+          Target: /blog/save/cant-afford-employer-health-insurance/
+          Status: '301'
+        - Source: /blog/save/non-subsidy-eligible-obamacare-alternatives/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /blog/save/one-way-to-use-your-tax-refund-wisely-buy-a-dental-insurance-plan/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /blog/save/podcast-what-should-you-do-when-you-cant-afford-your-health-plan/
+          Target: /blog/save/high-deductible-health-plan-help/
+          Status: '301'
+        - Source: /blog/save/put-some-heart-into-your-health-benefits/
+          Target: /blog/learn/heart-attack-insurance/
+          Status: '301'
+        - Source: /blog/save/root-canals-what-they-cost-how-to-pay-and-the-best-way-to-save-on-one/
+          Target: /blog/learn/dental-procedure-costs/
+          Status: '301'
+        - Source: /blog/save/rx-pay-card-discounts-prescription-drug-costs/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /blog/save/temporary-health-insurance-is-easy-option-for-employers-with-seasonal-workers/
+          Target: /blog/save/independent-contractor-health-insurance/
+          Status: '301'
+        - Source: /blog/save/top-10-reasons-to-try-telemedicine/
+          Target: /blog/learn/what-is-telemedicine/
+          Status: '301'
+        - Source: /blog/save/what-does-short-term-health-insurance-cover/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /blog/save/who-sells-short-term-health-insurance/
+          Target: /alternative-health-insurance/short-term/
+          Status: '301'
+        - Source: /blog/save/why-hospital-indemnity/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/save/why-should-i-choose-an-hsa-plan-during-workplace-open-enrollment/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/save/without-coverage-top-5-reasons-to-buy-short-term-health-insurance/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /blog/save/womens-health-preventive-care-at-every-age-benefits/
+          Target: /blog/aca/what-preventive-services-are-covered-by-obamacare/
+          Status: '301'
+        - Source: /blog/save/you-should-open-an-hsa-health-savings-account/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/short-term/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Target: /blog/save/3-options-if-you-lose-health-insurance-coverage-due-to-affordability/
+          Status: '301'
+        - Source: /blog/short-term/best-short-term-health-insurance/
+          Target: /blog/save/best-short-term-health-insurance/
+          Status: '301'
+        - Source: /blog/short-term/federal-ruling-short-term-health-insurance/
+          Target: /blog/news/federal-ruling-short-term-health-insurance/
+          Status: '301'
+        - Source: /blog/short-term/laid-off-health-insurance/
+          Target: /blog/learn/laid-off-health-insurance/
+          Status: '301'
+        - Source: /blog/short-term/short-term-health-insurance-pros-cons/
+          Target: /blog/save/short-term-health-insurance-pros-cons/
+          Status: '301'
+        - Source: /blog/short-term/short-term-health-insurance-state-duration-limits/
+          Target: /blog/save/short-term-health-insurance-state-duration-limits/
+          Status: '301'
+        - Source: /blog/short-term/what-is-short-term-medical-insurance/
+          Target: /blog/save/what-is-short-term-medical-insurance/
+          Status: '301'
+        - Source: /blog/short-term/why-buy-short-term-health-insurance/
+          Target: /blog/save/why-buy-short-term-health-insurance/
+          Status: '301'
+        - Source: /blog/should-you-get-a-colonoscopy-5-questions-to-ask-yourself/
+          Target: /blog/learn/stop-avoiding-this-test-colonoscopies-save-lives/
+          Status: '301'
+        - Source: /blog/the-affordable-care-act-versus-obamacare/
+          Target: /
+          Status: '301'
+        - Source: /blog/the-obamacare-affordability-gap-how-some-poor-and-middleclass-are-being-priced-out-of-health-insurance/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /blog/update-individual-health-insurance-landscape-in-california/
+          Target: /
+          Status: '301'
+        - Source: /blog/update-individual-health-insurance-landscape-in-florida/
+          Target: /
+          Status: '301'
+        - Source: /blog/update-individual-health-insurance-landscape-in-minnesota/
+          Target: /
+          Status: '301'
+        - Source: /blog/update-individual-health-insurance-landscape-in-oregon/
+          Target: /
+          Status: '301'
+        - Source: /blog/video-your-2014-obamacare-tax-credit/
+          Target: /blog/aca/your-guide-to-the-federal-poverty-level/
+          Status: '301'
+        - Source: /blog/vision/best-vision-insurance/
+          Target: /blog/learn/best-vision-insurance/
+          Status: '301'
+        - Source: /blog/vision/how-much-is-an-eye-exam-without-insurance/
+          Target: /blog/learn/how-much-is-an-eye-exam-without-insurance/
+          Status: '301'
+        - Source: /blog/vision/is-vision-insurance-worth-it/
+          Target: /blog/learn/is-vision-insurance-worth-it/
+          Status: '301'
+        - Source: /blog/what-are-special-enrollment-periods-for-health-insurance/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /blog/what-are-the-obamacare-metal-coverage-tiers/
+          Target: /blog/aca/obamacare-metal-plans/
+          Status: '301'
+        - Source: /blog/what-can-college-students-do-about-narrow-networks/
+          Target: /blog/save/college-student-health-insurance/
+          Status: '301'
+        - Source: /blog/what-happens-if-i-dont-have-health-insurance-in-2014/
+          Target: /blog/aca/no-health-insurance-coverage/
+          Status: '301'
+        - Source: /blog/what-if-i-prefer-my-non-compliant-health-insurance-plan/
+          Target: /blog/aca/grandfathered-health-plans/
+          Status: '301'
+        - Source: /blog/what-is-a-health-savings-account-a-quick-guide-to-hsas/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /blog/what-is-hospital-indemnity-insurance/
+          Target: /blog/learn/what-is-a-hospital-indemnity-plan/
+          Status: '301'
+        - Source: /blog/what-is-the-difference-between-coinsurance-copay-deductible/
+          Target: /blog/learn/what-is-the-difference-between-coinsurance-copay-deductible/
+          Status: '301'
+        - Source: /blog/what-is-the-difference-between-private-and-federal-exchanges/
+          Target: /blog/aca/should-i-buy-from-the-health-insurance-marketplace-or-outside-it/
+          Status: '301'
+        - Source: /blog/what-is-the-obamacare-coverage-gap/
+          Target: /blog/save/obamacare-health-insurance-alternatives/
+          Status: '301'
+        - Source: /blog/what-to-do-if-you-missed-obamacare-open-enrollment/
+          Target: /blog/aca/i-missed-open-enrollment-can-i-still-enroll/
+          Status: '301'
+        - Source: /blog/who-can-buy-catastrophic-health-plans-under-obamacare/
+          Target: /blog/aca/catastrophic-health-plans-and-obamacare/
+          Status: '301'
+        - Source: /blog/why-you-might-have-to-pay-back-your-obamacare-subsidy/
+          Target: /blog/aca/obamacare-subsidy-income-change/
+          Status: '301'
+        - Source: /blog/will-my-employers-waiting-period-mean-a-tax-penalty/
+          Target: /blog/save/need-health-insurance-now/
+          Status: '301'
+        - Source: /blogart/
+          Target: /blog/
+          Status: '301'
+        - Source: /blogart/save-money-with-obamacare-tax-credits-and-subsidies/
+          Target: /blog/aca/subsidies-tax-credits/
+          Status: '301'
+        - Source: /blogart/you-should-open-an-hsa-health-savings-account/
+          Target: /blog/learn/hsa-insurance/
+          Status: '301'
+        - Source: /care-access-plan/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /category/blog/aca/page/1/
+          Target: /blog/category/aca/
+          Status: '301'
+        - Source: /category/blog/learn/page/1/
+          Target: /blog/category/learn/
+          Status: '301'
+        - Source: /category/blog/save/page/1/
+          Target: /blog/category/save/
+          Status: '301'
+        - Source: /cloud/
+          Target: /
+          Status: '301'
+        - Source: /compare/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /compare-dbu/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /compare-pph/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /contact/
+          Target: /about-us/
+          Status: '301'
+        - Source: /contact-us/customer-service/
+          Target: /about-us/
+          Status: '301'
+        - Source: /contact-us/general-questions/
+          Target: /about-us/
+          Status: '301'
+        - Source: /contact-us/health-advisor/
+          Target: /about-us/
+          Status: '301'
+        - Source: /critical-illness-insurance/
+          Target: /health-insurance-plans/critical-illness-insurance
+          Status: '301'
+        - Source: /critical-illness-insurance/
+          Target: /health-insurance-plans/critical-illness-insurance
+          Status: '301'
+        - Source: /deadline-reminder/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /default.htm/
+          Target: /
+          Status: '301'
+        - Source: /define/obamacare/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /dental-insurance/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /dental-insurance-quote/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /disclaimers/
+          Target: /terms/
+          Status: '301'
+        - Source: /faq-category/aca/
+          Target: /health-insurance-plans/aca/
+          Status: '301'
+        - Source: /faq-category/dental-insurance/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /faq-category/gap-health-insurance/
+          Target: /supplemental-health-insurance/medical-gap/
+          Status: '301'
+        - Source: /faq-category/hospital-insurance/
+          Target: /alternative-health-insurance/hospital/
+          Status: '301'
+        - Source: /faq-category/short-term-health-insurance/
+          Target: /alternative-health-insurance/short-term/
+          Status: '301'
+        - Source: /find-an-agent/
+          Target: /
+          Status: '301'
+        - Source: /florida-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /georgia-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /group/
+          Target: /
+          Status: '301'
+        - Source: /group-products/
+          Target: /
+          Status: '301'
+        - Source: /health-care-reform-calculator/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /health-care-reform-calculator?AgentNumber=/
+          Target: /obamacare-calculator/
+          Status: '301'
+        - Source: /health-insurance-add-ons/
+          Target: /medical-discount-plans/
+          Status: '301'
+        - Source: /health-insurance-add-ons/rx-discount-card/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /health-insurance-add-ons/rx-discount-card/faq/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /health-insurance-add-ons/rx-discount-card/quote/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /health-insurance-add-ons/telemedicine/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /health-insurance-add-ons/telemedicine/quote/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /health-insurance-plans/short-term/connect-plus/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /health-insurance-plans/short-term/faq/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /hed-oe-rc/
+          Target: /
+          Status: '301'
+        - Source: /home-ppc/
+          Target: /
+          Status: '301'
+        - Source: /hospital-medical-insurance/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /hospital-plan/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /hospital-plan-oe-ppc/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /hospital-plan-oe-ppc-quote/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /hospital-plan-ppc/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /hospital-plan-quote/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /hospital-plan-quote-now-ppc/
+          Target: /health-insurance-plans/hospital-indemnity-insurance/
+          Status: '301'
+        - Source: /ihcdentalPPO/
+          Target: /health-insurance-plans/dental-insurance/
+          Status: '301'
+        - Source: /individual-family-health-insurance-marketplace/
+          Target: /about-us/
+          Status: '301'
+        - Source: /individual-family-health-insurance-plans/
+          Target: /
+          Status: '301'
+        - Source: /individual-products/
+          Target: /
+          Status: '301'
+        - Source: /individual-products-ppc/
+          Target: /
+          Status: '301'
+        - Source: /major-medical-insurance/
+          Target: /health-insurance-plans/aca/
+          Status: '301'
+        - Source: /major-medical-insurance/
+          Target: /health-insurance-plans/aca
+          Status: '301'
+        - Source: /major-medical-insurance/quote/
+          Target: /health-insurance-plans/aca/
+          Status: '301'
+        - Source: /medical-bundle/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /medical-bundle-quote/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /medical-discount-plans/
+          Target: /health-insurance-plans/medical-discount-plans
+          Status: '301'
+        - Source: /medical-discount-plans/quote/
+          Target: /health-insurance-plans/medical-discount-plans
+          Status: '301'
+        - Source: /medical-gap-insurance/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /metal-gap/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /metal-gap-1-quote/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /metal-gap-2/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /metal-gap-2-quote/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /minnesota-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /obamacare/
+          Target: /health-insurance-plans/aca/
+          Status: '301'
+        - Source: /obamacare-open-enrollment/aca-faq/
+          Target: /health-insurance-plans/aca/
+          Status: '301'
+        - Source: /obamacare-short-term-insurance/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /obamacare-short-term-insurance-2/
+          Target: /blog/aca/how-to-qualify-for-health-insurance-special-enrollment/
+          Status: '301'
+        - Source: /open-enrollment-2019-rate-changes/
+          Target: /blog/aca/obamacare-whats-new/
+          Status: '301'
+        - Source: /quote/metal-gap/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /rx-discount-card/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /rx-discount-card/faq/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /state-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /supplemental/
+          Target: /health-insurance-plans/medical-gap-health-insurance/
+          Status: '301'
+        - Source: /supplemental-health-insurance/
+          Target: /health-insurance-plans/medical-gap-health-insurance
+          Status: '301'
+        - Source: /supplemental-health-insurance/accident-insurance/
+          Target: /health-insurance-plans/accident-insurance/
+          Status: '301'
+        - Source: /supplemental-health-insurance/accident-insurance/quote/
+          Target: /health-insurance-plans/accident-insurance
+          Status: '301'
+        - Source: /supplemental-health-insurance/critical-illness-insurance/
+          Target: /health-insurance-plans/critical-illness-insurance/
+          Status: '301'
+        - Source: /supplemental-health-insurance/critical-illness-insurance/quote/
+          Target: /health-insurance-plans/critical-illness-insurance
+          Status: '301'
+        - Source: /supplemental-health-insurance/dental/
+          Target: /health-insurance-plans/dental-insurance
+          Status: '301'
+        - Source: /supplemental-health-insurance/dental/quote/
+          Target: /health-insurance-plans/dental-insurance
+          Status: '301'
+        - Source: /supplemental-health-insurance/medical-gap/
+          Target: /health-insurance-plans/medical-gap-health-insurance
+          Status: '301'
+        - Source: /supplemental-health-insurance/medical-gap/quote/
+          Target: /health-insurance-plans/medical-gap-health-insurance
+          Status: '301'
+        - Source: /tags/
+          Target: /blog/
+          Status: '301'
+        - Source: /telemedicine/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /telemedicine-quote/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /telemedicine-resource-center/
+          Target: /health-insurance-plans/medical-discount-plans/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance-ppc/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance-quote/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance-quote-now/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance-quote-now-ppc/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance-quote?
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance-quote/
+          Target: /health-insurance-plans/short-term
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance/connect-plus/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /temporary-short-term-health-insurance/faq/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /texas-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /trump-healthcare-reform-resource-center/
+          Target: /blog/news/aca-pre-existing-conditions-coverage/
+          Status: '301'
+        - Source: /welcome/
+          Target: /
+          Status: '301'
+        - Source: /blog/aca/how-to-pay-the-aca-tax-penalty/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/5-top-free-apps-for-managing-your-health-in-2015/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/5-top-pregnancy-apps/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/health-and-wellness-information-resources/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/how-to-use-your-short-term-health-insurance-plan-benefits/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/how-will-healthcare-mergers-affect-insurance-premiums/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/mouthguards-back-to-school/
+          Target: /
+          Status: '301'
+        - Source: /blog/learn/what-to-do-if-your-child-knocks-out-chips-a-tooth/
+          Target: /
+          Status: '301'
+        - Source: /blog/news/donald-trump-healthcare-plan/
+          Target: /
+          Status: '301'
+        - Source: /blog/news/is-the-obamacare-smoking-penalty-working/
+          Target: /
+          Status: '301'
+        - Source: /blog/news/no-obamacare-open-enrollment-for-pregnant-women-says-department-of-health-and-human-services/
+          Target: /
+          Status: '301'
+        - Source: /blog/news/risk-adjustment-payment-freeze/
+          Target: /
+          Status: '301'
+        - Source: /blog/save/3-actions-to-take-if-you-havent-used-your-health-insurance/
+          Target: /
+          Status: '301'
+        - Source: /blog/save/pet-insurance-has-a-longer-history-is-more-affordable-than-you-think/
+          Target: /
+          Status: '301'
+        - Source: /blog/save/when-preventive-care-leads-to-medical-bills/
+          Target: /
+          Status: '301'
+        - Source: /alternative-health-insurance/packages/quote/
+          Target: /health-insurance-plans/short-term/
+          Status: '301'
+        - Source: /agent/richard-brown/
+          Target: /local-health-insurance-option/
+          Status: '301'
+        - Source: /health-insurance-plans/medical-gap-health-insurance/
+          Target: /health-insurance-plans/accident-insurance/
+          Status: '301'
+      IAMServiceRole: !GetAtt AmplifyRole.Arn
+
+  AmplifyBranchStaging:
+    Type: AWS::Amplify::Branch
+    Properties:
+      BasicAuthConfig:
+        EnableBasicAuth: true
+        Username: !Ref Username
+        Password: !Ref Password
+      EnablePullRequestPreview: true
+      PullRequestEnvironmentName: prenv
+      BranchName: !Ref BranchStaging
+      AppId: !GetAtt AmplifyApp.AppId
+      EnableAutoBuild: true
+
+  AmplifyBranchProduction:
+    Type: AWS::Amplify::Branch
+    Properties:
+      EnablePullRequestPreview: true
+      PullRequestEnvironmentName: prenv
+      BranchName: !Ref BranchProduction
+      AppId: !GetAtt AmplifyApp.AppId
+      EnableAutoBuild: true
+      EnvironmentVariables:
+        - Name: GATSBY_STAGE
+          Value: production
+        - Name: GATSBY_SITE_URL
+          Value: !Ref SiteUrl
+        - Name: SITE_URL
+          Value: !Ref SiteUrl
+        - Name: WPGRAPHQL_URL
+          Value: !Ref WpGraphQlUrl
+        - Name: GATSBY_ROUTER_LOG
+          Value: !Ref GatsbyRouterLog
+        - Name: GATSBY_ROUTER_LOG_KEY
+          Value: !Ref GatsbyRouterLogKey
+
+  AmplifyDomain:
+    Type: AWS::Amplify::Domain
+    Properties:
+      DomainName: !Ref DomainName
+      AppId: !GetAtt AmplifyApp.AppId
+      SubDomainSettings:
+        - BranchName: !GetAtt AmplifyBranchStaging.BranchName
+          Prefix: staging
+        - BranchName: !GetAtt AmplifyBranchProduction.BranchName
+          Prefix: 'www'
+        - BranchName: !GetAtt AmplifyBranchProduction.BranchName
+          Prefix: ''

@@ -1,0 +1,120 @@
+.health-advisor {
+  // padding: 0 16px;
+  .health-advisor-form {
+    background: $white;
+    -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 32px 16px;
+    max-width: 594px;
+    width: 100%;
+    margin: 32px auto;
+    @include desktop {
+      margin: 64px auto;
+    }
+    h3 {
+      color: var(--title-color);
+    }
+    .form-box {
+      margin-bottom: 16px;
+      @include desktop {
+        display: flex;
+        margin-bottom: 0;
+      }
+      .field {
+        @include desktop {
+          width: 50%;
+          &:first-child {
+            padding-right: 16px;
+          }
+        }
+      }
+    }
+    .field {
+      @include desktop {
+        margin-bottom: 22px;
+      }
+    }
+    .field.has-error {
+      background-color: $white;
+      input,
+      select,
+      textarea {
+        background-color: $light-pink;
+      }
+      label {
+        background-color: $white;
+      }
+    }
+    button.button {
+      width: 100%;
+      height: 60px;
+      margin-top: 10px;
+      color: $white;
+      font-weight: $bold;
+      font-size: 22px;
+      border-radius: 4px;
+    }
+    .warning-message {
+      background-color: $light-pink;
+      border-radius: 4px;
+      padding: 24px;
+      position: relative;
+      font-size: 18px;
+      p {
+        color: $dark-red;
+        font-style: italic;
+        margin-bottom: 0;
+        font-weight: $regular;
+      }
+      img {
+        position: absolute;
+        right: 13px;
+        top: 13px;
+        cursor: pointer;
+      }
+      @include desktop {
+        margin-top: 24px;
+      }
+    }
+    .success-message {
+      background-color: $light-green;
+      border-radius: 4px;
+      padding: 24px;
+      position: relative;
+      font-size: 18px;
+      p {
+        color: var(--title-color);
+        font-style: italic;
+        margin-bottom: 0;
+        font-weight: $regular;
+      }
+      img {
+        position: absolute;
+        right: 13px;
+        top: 13px;
+        cursor: pointer;
+      }
+      @include desktop {
+        margin-top: 24px;
+      }
+    }
+    .disclaimer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 32px;
+      img {
+        position: relative;
+        top: 2px;
+        padding-right: 8px;
+      }
+      small {
+        font-size: 14px;
+        font-family: $family-primary;
+        color: $dark-grey;
+      }
+    }
+  }
+}

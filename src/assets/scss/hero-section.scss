@@ -1,0 +1,56 @@
+.hero-section {
+  width: 100%;
+  position: relative;
+  .hero-image-mobile {
+    display: block;
+    width: 100%;
+    @include desktop {
+      display: none;
+    }
+  }
+  .hero-image-desktop {
+    width: 100%;
+    display: none;
+    @include desktop {
+      display: block;
+    }
+  }
+  .hero-image {
+    .gatsby-image-wrapper {
+      width: inherit !important;
+    }
+    @include desktop {
+      width: 100%;
+    }
+  }
+  .overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(48, 48, 48, 0.7);
+  }
+  .hero-content {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    .custom-container.hero {
+      padding-top: 64px;
+      h1 {
+        color: $white;
+      }
+      .subtitle {
+        p {
+          color: $white;
+          font-size: 18px;
+          @include desktop {
+            font-size: 22px;
+            font-weight: $bold;
+          }
+        }
+      }
+    }
+  }
+}

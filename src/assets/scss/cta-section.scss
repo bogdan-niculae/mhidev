@@ -1,0 +1,63 @@
+.cta-section {
+  background-color: var(--section-color);
+  padding: 64px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  button {
+    width: 100%;
+    max-width: 353px;
+    background: linear-gradient(
+      270deg,
+      var(--button-primary-darken) 0%,
+      var(--button-primary-lighter) 100%
+    );
+    &:hover {
+      color: #fff;
+      background: linear-gradient(
+        150deg,
+        var(--button-primary-hover) 0%,
+        var(--button-primary-hover) 100%
+      );
+    }
+  }
+  .phone-number-btn {
+    a {
+      margin-bottom: 0;
+      font-size: 22px;
+      line-height: 1.5;
+      font-family: $family-primary;
+      font-weight: $regular;
+      color: #fff;
+      margin-left: 5px;
+    }
+  }
+}
+.learn-more-section {
+  padding: 32px;
+  p {
+    max-width: 1300px;
+    margin: 0 auto;
+    text-align: center;
+    cursor: pointer;
+  }
+  .paragraph-link {
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-color: $black;
+    text-decoration-thickness: 1px;
+  }
+}
+.blue-section {
+  background: var(--section-color);
+}
+
+.blue-section-gradient {
+  background: var(--section-color);
+  background: linear-gradient(
+    180deg,
+    var(--section-color) 80%,
+    rgba(255, 255, 255, 1) 80%
+  );
+}

@@ -1,0 +1,107 @@
+.agent {
+  .footer-container {
+    padding: 64px 0 32px 0;
+    .footer-title {
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 23px;
+      font-family: $family-secondary;
+      letter-spacing: 1.7px;
+      margin-bottom: 16px;
+      color: var(--title-color);
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      @include desktop {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .footer-link {
+        @include desktop {
+          padding: 0 21px;
+          &:first-child {
+            padding-left: 0;
+          }
+          &:last-child {
+            padding-right: 0;
+          }
+        }
+        a {
+          color: var(--title-color);
+          font-size: 16px;
+          line-height: 23px;
+          padding-bottom: 8px;
+          @include desktop {
+            border-bottom: 1px solid transparent;
+            transition: $transition;
+            &:hover {
+              border-bottom: 1px solid var(--title-color);
+            }
+          }
+        }
+      }
+    }
+    .footer-logos {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 32px;
+      @include desktop {
+        margin-top: 42px;
+        flex-direction: row;
+      }
+      .footer-logo {
+        line-height: 1px;
+        &:first-child {
+          margin-bottom: 32px;
+          @include desktop {
+            margin-bottom: 42px;
+            margin-right: 32px;
+          }
+        }
+      }
+    }
+    .footer-text {
+      background-color: var(--section-color);
+      padding: 32px 0;
+      .footer-text-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 16px;
+        @include from(1420px) {
+          padding: 0;
+        }
+        p {
+          color: #597280;
+          margin-bottom: 8px;
+          font-size: 14px;
+          span {
+            font-weight: 800;
+          }
+        }
+        @include desktop {
+          p {
+            line-height: 20px;
+          }
+        }
+      }
+    }
+    .footer-copyright {
+      background-color: #192f55;
+      color: $white;
+      font-size: 16px;
+      text-align: center;
+      line-height: 23px;
+      padding: 32px 0;
+      @include desktop {
+        padding: 22px 0;
+      }
+    }
+  }
+}

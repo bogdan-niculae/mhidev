@@ -1,0 +1,15 @@
+node_modules
+public
+WordPress
+devops
+.husky
+.wordpress-cache
+.cache
+package.json
+package-lock.json
+public
+coverage
+build
+static
+README.md
+src/html.js

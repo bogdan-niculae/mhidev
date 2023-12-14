@@ -1,0 +1,58 @@
+.agent-zip-component {
+  background-color: var(--section-color);
+  padding: 32px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  @include desktop {
+    padding: 64px 0;
+  }
+  h2 {
+    text-align: center;
+    color: var(--title-color);
+  }
+  h6 {
+    text-align: center;
+    color: var(--title-color);
+  }
+  .zip-content {
+    @include desktop {
+      display: flex;
+      align-items: center;
+    }
+    .field {
+      margin-bottom: 24px;
+      @include desktop {
+        max-width: 353px;
+        width: 353px;
+        margin-right: 15px;
+        margin-bottom: 0;
+      }
+      label {
+        margin-bottom: 8px;
+        display: block;
+      }
+    }
+    .field.has-error {
+      background-color: var(--section-color);
+
+      input {
+        background: $light-pink;
+      }
+    }
+    .submit-button {
+      @include desktop {
+        padding-top: 29px;
+      }
+      button {
+        width: 100%;
+        @include desktop {
+          width: 353px;
+        }
+      }
+    }
+  }
+}

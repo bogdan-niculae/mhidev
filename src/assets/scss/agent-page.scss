@@ -1,0 +1,429 @@
+.agent {
+  .agent-about-me-section {
+    max-width: 932px;
+    margin: 0 auto;
+    padding: 0 16px 64px 16px;
+    @include desktop {
+      padding: 64px 16px 64px 16px;
+    }
+    h3 {
+      color: var(--title-color);
+      text-align: center;
+    }
+  }
+  .contact-agent {
+    background-color: var(--section-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 64px 16px;
+    h2 {
+      color: var(--title-color);
+      text-align: center;
+    }
+    button {
+      width: 100%;
+      max-width: 288px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 26px;
+      font-weight: $bold;
+      @include desktop {
+        max-width: 579px;
+        font-size: 40px;
+        padding: 3px 0;
+      }
+      a {
+        margin-bottom: 0;
+        color: $white;
+        font-weight: $bold;
+        font-size: 26px;
+        padding-left: 5px;
+        @include desktop {
+          font-size: 40px;
+        }
+      }
+    }
+  }
+  .related-products-section {
+    h3 {
+      margin-bottom: 10px;
+    }
+    .related-product-subtitle {
+      margin-bottom: 32px;
+      text-align: center;
+      font-size: 1.375rem;
+    }
+  }
+  .articles {
+    width: 100%;
+    @include desktop {
+      padding-bottom: 64px;
+    }
+    h2 {
+      color: var(--title-color);
+      text-align: center;
+      margin: 45px 0 32px 0;
+      @include desktop {
+        margin: 64px 0 32px 0;
+      }
+    }
+    .custom-container.articles {
+      max-width: 1300px;
+      @include desktop {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .article {
+        width: 100%;
+        margin: 0 auto 32px auto;
+        @include desktop {
+          display: flex;
+          flex-wrap: wrap;
+          width: 33.3%;
+          padding-right: 32px;
+          margin-bottom: 0;
+        }
+        .article-content {
+          background: $white;
+          -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          padding: 32px 16px;
+          max-width: 430px;
+          width: 100%;
+          @include desktop {
+            max-width: 444px;
+            padding: 32px;
+            transition: all 0.4s;
+            cursor: pointer;
+            &:hover {
+              background-color: var(--section-color);
+            }
+          }
+          img {
+            width: 53px;
+          }
+          h4 {
+            color: var(--title-color);
+            margin-top: 32px;
+          }
+          p {
+            color: var(--nav);
+            margin-bottom: 32px;
+          }
+          button {
+            padding: 0 16px;
+            font-weight: $bold;
+            line-height: 20px;
+            height: 48px;
+            font-size: 18px;
+            width: 100%;
+            max-width: 348px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
+  .network-offering {
+    background-color: var(--section-color);
+    @include desktop {
+      margin-bottom: 128px;
+    }
+    .network-offering-content {
+      padding: 32px 16px;
+      @include desktop {
+        padding: 0;
+        position: relative;
+        top: 72px;
+      }
+      h2 {
+        color: var(--title-color);
+      }
+    }
+  }
+  .products.custom-container {
+    padding: 64px 16px;
+    max-width: 1300px;
+    @include desktop {
+      padding: 64px 0px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    h2 {
+      color: var(--title-color);
+      text-align: center;
+      width: 100%;
+    }
+    h6 {
+      text-align: center;
+      color: var(--nav);
+      font-family: $family-primary;
+      font-size: 18px;
+      margin-bottom: 32px;
+      width: 100%;
+      @include desktop {
+        font-size: 20px;
+      }
+    }
+    .product {
+      @include desktop {
+        padding-right: 32px;
+        &:nth-child(3n + 2) {
+          padding-right: 0;
+        }
+      }
+      .product-content {
+        -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+        -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        max-width: 412px;
+        margin: 0 auto 16px auto;
+        @include desktop {
+          margin: 0;
+          margin-bottom: 32px;
+          @include desktop {
+            cursor: pointer;
+            &:hover {
+              button {
+                background: var(--button-bg-color);
+                color: $white;
+                &:after {
+                  background-image: url("../images/agent-arrow-white.svg");
+                }
+              }
+            }
+          }
+        }
+        .agent-product-image {
+          border-radius: 0;
+        }
+        button {
+          background: $white;
+          color: var(--title-color);
+          font-size: 18px;
+          justify-content: flex-start;
+          text-transform: uppercase;
+          font-weight: $bold;
+          position: relative;
+          width: 100%;
+          transition: all 0.4s;
+          &:after {
+            content: "";
+            background-image: url("../images/agent-arrow-blue.svg");
+            width: 29px;
+            height: 14px;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translate(0, -50%);
+            @include desktop {
+              right: 20px;
+            }
+          }
+          span {
+            max-width: 208px;
+            text-align: left;
+            @include desktop {
+              max-width: 300px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .agent-header {
+    position: relative;
+    padding-bottom: 64px;
+    @include desktop {
+      padding-bottom: 0;
+    }
+    .agent-featured-image-desktop {
+      display: none;
+      .overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: rgba(48, 48, 48, 0.7);
+      }
+      @include desktop {
+        display: block;
+      }
+    }
+    .agent-featured-image-mobile {
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      .overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: rgba(48, 48, 48, 0.7);
+      }
+      @include desktop {
+        display: none;
+      }
+    }
+    .agent-header-content {
+      position: relative;
+      z-index: 1;
+      @include desktop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .agent-header-content-wrapper {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 64px 16px 0 16px;
+        @include desktop {
+          padding: 64px 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+        }
+        @include widescreen {
+          flex-direction: row;
+          padding: 132px 16px;
+        }
+        h1 {
+          color: $white;
+          margin-bottom: 5px;
+          @include desktop {
+            max-width: 500px;
+            line-height: 1.2;
+          }
+        }
+        h3 {
+          font-size: 2rem;
+          line-height: 1.2;
+          color: $white;
+          margin-bottom: 5px;
+          @include desktop {
+            max-width: 500px;
+          }
+        }
+        .agent-info {
+          background-color: $white;
+          padding: 16px;
+          margin-top: 32px;
+          -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          @include desktop {
+            margin-top: 0;
+            padding: 32px;
+            max-width: 674px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          table {
+            margin-bottom: 16px;
+            margin-right: 10px;
+            max-width: 100%;
+            @include widescreen {
+              margin-bottom: 0;
+            }
+            tr {
+              td {
+                font-size: 1rem;
+                line-height: 28px;
+                font-size: 1.125rem;
+                min-width: 80px;
+                color: $darkest-blue;
+                a {
+                  font-size: 1rem;
+                  @include tablet {
+                    font-size: 1.125rem;
+                  }
+                }
+
+                @include tablet {
+                  font-size: 1.125rem;
+                }
+                &:first-child {
+                  // white-space: nowrap;
+                }
+                &:last-child {
+                  padding-left: 3px;
+                }
+              }
+            }
+          }
+          .agent-info-content {
+            padding-right: 5px;
+            h3 {
+              color: var(--title-color);
+            }
+            ul {
+              padding-left: 0;
+              li {
+                font-size: 16px;
+                padding-bottom: 8px;
+                &:last-child {
+                  padding-bottom: 0;
+                }
+                span {
+                  width: 75px;
+                  padding-right: 5px;
+                  display: inline-block;
+                }
+              }
+            }
+            button {
+              width: 100%;
+              height: 60px;
+              margin-bottom: 14px;
+              @include desktop {
+                width: 269px;
+              }
+            }
+          }
+          .agent-info-image {
+            text-align: center;
+            width: 250px;
+            @include desktop {
+              text-align: right;
+            }
+            .agent-image {
+              border-radius: 6px;
+              overflow: hidden;
+              -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.05);
+              -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.05);
+              box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.05);
+              width: 250px;
+              // width: 256px;
+              // height: 256px;
+              // @include desktop {
+              //   width: 233px;
+              //   height: 233px;
+              //   margin: 0 auto;
+              // }
+            }
+          }
+        }
+      }
+    }
+  }
+}

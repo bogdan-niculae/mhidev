@@ -1,0 +1,76 @@
+// Importing Bulma from node_modules
+@import "~bulma/bulma.sass";
+@import "./colors.css";
+@import "./variables.scss";
+@import "./typografy.scss";
+body {
+  font-family: $family-primary;
+  // var(--title-color): var(--color-primary);
+}
+.website-wrapper {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.wp-block-yoast-faq-block {
+  display: none;
+  overflow: hidden;
+}
+// components
+@import "./lists.scss";
+@import "./post-preview-card.scss";
+@import "./buttons.scss";
+@import "./header.scss";
+@import "./footer.scss";
+@import "./home-hero.scss";
+@import "./home-form.scss";
+@import "./section-image-left.scss";
+@import "./accordion.scss";
+@import "./covers.scss";
+@import "./speak-with-agent.scss";
+@import "./hero-section.scss";
+@import "./resources.scss";
+@import "./pros-and-cons-section.scss";
+@import "./resources-section.scss";
+@import "./related-products-section.scss";
+@import "./product-hero-section.scss";
+@import "./faq-section.scss";
+@import "./why-product-section.scss";
+@import "./do-you-need-insurance-box.scss";
+@import "./what-insurance-covers-section.scss";
+@import "./cta-section.scss";
+@import "./footer-agent.scss";
+@import "./agent-zip-component.scss";
+@import "./need-health-insurance-section.scss";
+@import "./featured-insurance-section.scss";
+@import "./find-your-agent-hero.scss";
+@import "./allAgentsList.scss";
+@import "./whole-family-coverage.scss";
+@import "./combination-coverage.scss";
+@import "./low-premiums.scss";
+@import "./shop-for-aca-form-section.scss";
+@import "./banners.scss";
+@import "./aca-affordability-calculator.scss";
+// pages
+@import "./home-page.scss";
+@import "./not-found.scss";
+@import "./search-page.scss";
+@import "./blog-page.scss";
+@import "./post-page.scss";
+@import "./aboutUs-page.scss";
+@import "./contatUs-page.scss";
+@import "./healthAdvisor-page.scss";
+@import "./agent-page.scss";
+@import "./privacy-page.scss";
+@import "./glossary.scss";
+@import "./glossary-post.scss";
+@import "./siteMap-page.scss";
+@import "./obamacareCalculator-page.scss";
+@import "./medicare-page.scss";
+@import "./newsroom.scss";
+@import "./media-alpha-page.scss";
+@import "./advertorial-page.scss";
+@import "./affinity.scss";
+@import "./health-insurance-page.scss";
+@import "./circle-of-champions-page.scss";

@@ -1,0 +1,132 @@
+.about-us {
+  .intro-section {
+    text-align: center;
+    padding: 64px 16px;
+    max-width: 1010px;
+    margin: 0 auto;
+    @include desktop {
+      padding: 64px 0;
+    }
+    h2 {
+      color: var(--title-color);
+    }
+  }
+  .section-one-wrapper {
+    @include desktop {
+      background: linear-gradient(
+        180deg,
+        var(--section-color) 90%,
+        rgba(255, 255, 255, 1) 90%
+      );
+      // height: 569px;
+      // margin-bottom: 64px;
+    }
+    .section-one {
+      padding-top: 0;
+      @include desktop {
+        padding-top: 32px;
+      }
+      p {
+        margin-bottom: 0;
+        strong {
+          color: var(--nav);
+        }
+      }
+      ul {
+        font-size: 16px;
+        @include desktop {
+          font-size: 18px;
+        }
+        li {
+          position: relative;
+          padding-top: 16px;
+          @include desktop {
+            padding-top: 0;
+          }
+          &:before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 100%;
+            background-color: $green;
+            position: absolute;
+            left: -15px;
+            top: 25px;
+            @include desktop {
+              top: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .section-two {
+    @include desktop {
+      padding-top: 96px;
+    }
+    p {
+      strong {
+        color: var(--nav);
+      }
+    }
+    ul {
+      font-size: 16px;
+      @include desktop {
+        font-size: 18px;
+      }
+      li {
+        position: relative;
+        @include desktop {
+          padding-top: 0;
+        }
+        &:before {
+          content: "";
+          width: 5px;
+          height: 5px;
+          border-radius: 100%;
+          background-color: $green;
+          position: absolute;
+          left: -15px;
+          top: 12px;
+        }
+      }
+    }
+  }
+  .section-three {
+    background-color: var(--section-color);
+    padding-top: 32px;
+    padding-bottom: 32px;
+    @include desktop {
+      padding-top: 64px;
+      padding-bottom: 64px;
+    }
+    h2 {
+      max-width: 969px;
+      color: var(--title-color);
+    }
+    .section-three-content {
+      @include desktop {
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
+
+        -webkit-column-gap: 64px;
+        -moz-column-gap: 64px;
+        column-gap: 64px;
+      }
+      h3,
+      h4,
+      h5 {
+        color: var(--title-color);
+      }
+    }
+  }
+  .how-we-rate {
+    padding-top: 64px;
+    padding-bottom: 64px;
+    text-align: center;
+    h3 {
+      color: var(--title-color);
+    }
+  }
+}

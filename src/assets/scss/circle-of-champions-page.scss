@@ -1,0 +1,56 @@
+.circle-of-champions-page {
+  .nav-section {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    height: 60px;
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  .heading-banner-section {
+    background-color: var(--section-color);
+
+    .heading-banner-wrapper {
+      max-width: 900px;
+      padding: 32px 16px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      h1 {
+        color: var(--title-color);
+        font-size: 1.875rem;
+        text-align: center;
+        @include desktop {
+          font-size: 2rem;
+        }
+      }
+    }
+  }
+
+  .circle-of-champions-content-section {
+    margin: 32px 0;
+    @include desktop {
+      margin: 64px 0;
+    }
+    .circle-of-champions-content-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 16px;
+      p,
+      a {
+        font-size: 1.125rem;
+        @include desktop {
+          font-size: 1.375rem;
+        }
+      }
+      h3 {
+        padding-top: 8px;
+        color: var(--title-color);
+        text-align: center;
+      }
+    }
+  }
+}

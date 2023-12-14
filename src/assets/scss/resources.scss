@@ -1,0 +1,15 @@
+.resources-columns {
+  display: flex;
+  flex-flow: row wrap;
+  // align-items: center;
+  justify-content: center;
+  gap: 2%;
+  .post-preview-card {
+    margin-bottom: 16px;
+    flex-basis: 100%;
+    @include tablet {
+      margin-bottom: 2%;
+      max-width: 380px;
+    }
+  }
+}

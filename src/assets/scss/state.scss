@@ -1,0 +1,203 @@
+.state-page {
+  // .state-section-box {
+  // p {
+  //   text-align: left;
+  //   line-height: 1.2;
+  // }
+  .state-page-hero-section {
+    h1 {
+      line-height: 1.2;
+    }
+  }
+  p.state-disclaimer {
+    color: $blue-nav;
+    margin-bottom: 0;
+  }
+  .state-section-box-button {
+    margin-bottom: 16px;
+    font-size: 1rem;
+    @include tablet {
+      font-size: 1.125rem;
+    }
+  }
+  .blue-gradient-section {
+    background: linear-gradient(rgb(242, 250, 255) 80%, white 80%);
+  }
+  ul {
+    margin-top: 8px;
+    margin-left: 16px;
+    li {
+      line-height: 1.2;
+      font-size: 1.125rem;
+      margin-bottom: 8px;
+      &::before {
+        content: "\2022";
+        color: $text-color;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+      }
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+  #prodSelect {
+    margin-bottom: 16px;
+  }
+  .state-calculator {
+    .state-calculator-content {
+      display: block;
+      @include desktop {
+        display: none;
+      }
+    }
+    .right-img-content-wrapper {
+      display: none;
+      @include desktop {
+        padding-right: 80px;
+        display: block;
+      }
+    }
+    .section-with-image-wrapper {
+      z-index: 2;
+      width: 100%;
+      overflow: visible;
+      // @include desktop {
+      //   overflow: hidden;
+      // }
+      .submit {
+        width: 100% !important;
+      }
+    }
+    .right-img-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      @include desktop {
+        flex-direction: row;
+      }
+      .custom-container {
+        width: 100%;
+        padding: 0;
+      }
+    }
+  }
+  .home-calculator {
+    background: none;
+    padding: 0;
+  }
+  .home-calculator-text {
+    display: none !important;
+  }
+  .home-calculator .custom-container.home-page .form {
+    width: 100%;
+    .form-box-four {
+      flex-wrap: wrap;
+      gap: 2%;
+      justify-content: space-between;
+      .field {
+        @include desktop {
+          width: 48%;
+          padding-right: 0;
+        }
+      }
+    }
+  }
+  .form-box {
+    display: flex;
+    flex-direction: column !important;
+    .field {
+      width: 100% !important;
+      padding-right: 0 !important;
+    }
+  }
+  .state-short-form {
+    .section-with-image-wrapper {
+      z-index: 2;
+      width: 100%;
+      overflow: visible;
+      // @include desktop {
+      //   overflow: hidden;
+      // }
+      // .submit {
+      //   width: 100% !important;
+      // }
+    }
+    .section-with-image-content-wrapper {
+      display: none;
+      @include desktop {
+        margin-left: -44px;
+        display: block;
+      }
+    }
+    .short-form-content {
+      display: block;
+      @include desktop {
+        display: none;
+      }
+    }
+  }
+  // }
+  .state-facts {
+    h3 {
+      color: var(--title-color);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .custom-container {
+      padding: 64px 16px;
+      padding-top: 0;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .state-facts-row {
+      display: flex;
+      flex-direction: column;
+      @include tablet {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 2%;
+      }
+      .state-facts-col {
+        margin-bottom: 16px;
+        width: 100%;
+        @include tablet {
+          min-width: 49%;
+          max-width: 49%;
+        }
+        @include desktop {
+          min-width: 23%;
+          max-width: 23%;
+        }
+        .state-facts-card {
+          // max-width: 240px;
+          height: 100%;
+          background: #ffffff;
+          box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          padding: 32px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          .state-facts-card-content {
+            p {
+              margin: 0;
+            }
+          }
+          .state-facts-card-number {
+            font-family: $family-secondary;
+            font-weight: $semi-bold;
+            font-weight: 500;
+            font-size: 2rem;
+            line-height: 41px;
+            letter-spacing: 0.05em;
+            color: var(--title-color);
+          }
+        }
+      }
+    }
+  }
+}

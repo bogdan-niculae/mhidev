@@ -1,0 +1,111 @@
+footer {
+  background-color: var(--title-color);
+  color: $white;
+  .footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 64px 16px 32px 16px;
+    @include from(1420px) {
+      padding: 64px 0 32px 0;
+    }
+    .footer-title {
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 23px;
+      font-family: $family-secondary;
+      letter-spacing: 1.7px;
+      margin-bottom: 16px;
+      color: $white;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      @include desktop {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .footer-link {
+        padding: 5px 0;
+        @include desktop {
+          padding: 0 21px;
+          &:first-child {
+            padding-left: 0;
+          }
+          &:last-child {
+            padding-right: 0;
+          }
+        }
+        a {
+          color: $white;
+          font-size: 16px;
+          line-height: 23px;
+          padding-bottom: 8px;
+          @include desktop {
+            border-bottom: 1px solid transparent;
+            transition: $transition;
+            &:hover {
+              border-bottom: 1px solid $white;
+            }
+          }
+        }
+      }
+    }
+    .footer-logos {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 32px 0 64px 0;
+      @include desktop {
+        flex-direction: row;
+      }
+      .footer-logo {
+        line-height: 1px;
+        &:first-child {
+          margin-bottom: 32px;
+          @include desktop {
+            margin-bottom: 0;
+            margin-right: 32px;
+          }
+        }
+      }
+    }
+    .footer-text {
+      margin-bottom: 32px;
+      p {
+        color: $white;
+        margin-bottom: 8px;
+        font-size: 14px;
+        a {
+          font-size: 14px;
+          color: var(--section-color);
+          // &:hover,
+          // &:active,
+          // &:focus {
+          //   color: darken(var(--section-color), 30%);
+          // }
+        }
+        span {
+          font-weight: 800;
+        }
+      }
+      @include desktop {
+        p {
+          line-height: 20px;
+          &:first-child {
+            margin-bottom: 30px;
+          }
+        }
+      }
+    }
+    .footer-copyright {
+      font-size: 16px;
+      text-align: center;
+      line-height: 23px;
+    }
+  }
+}

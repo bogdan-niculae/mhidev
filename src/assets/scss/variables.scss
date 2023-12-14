@@ -1,0 +1,47 @@
+$family-primary: "source-sans-pro", BlinkMacSystemFont, -apple-system,
+  "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+  "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+$family-secondary: "Frank Ruhl Libre", serif;
+
+// Colors
+$white: #ffffff;
+$black: #000000;
+// var(--title-color): #163a5e;
+// var(--title-color)-darken: #0f2942;
+// var(--section-color): #f2faff;
+// var(--color-primary): #303030;
+$dark-grey: #626262;
+$light-green: #def0d8;
+$dark-red: #b94a48;
+$light-pink: #eed3d7;
+// var(--sky-blue): #d9f0ff;
+// var(--nav): #0074c9;
+// $nav-darken: #00518d;
+$green: #a8c105;
+$gray: #a0a0a0;
+$text-color: #303030;
+// var(--button-primary): #f78030;
+// var(--button-primary-hover): #d95300;
+// var(--button-primary-darken): #e85a04;
+// var(--button-primary-lighter): #f78030;
+// var(--nav): #4c6371; We have two dark-blue checks to see if this change is breaking something
+// var(--button-bg-color): linear-gradient(
+//   270deg,
+//   var(--button-primary-darken) 0%,
+//   var(--button-primary-lighter) 100%
+// );
+// var(--section-color-darken): #c0e7ff;
+// var(--loader-color): #cef;
+// var(--nav): #0074c9;
+// $field-disabled: #f2faff;
+// Font-weights
+$light: 300;
+$regular: 400;
+$semi-bold: 500;
+$bold: 600;
+$extra-bold: 700;
+$transition: all 0.35s ease;
+$darkest-blue: #4c6371;
+.is-widescreen {
+  max-width: 1300px !important;
+}

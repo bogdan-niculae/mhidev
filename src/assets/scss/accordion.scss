@@ -1,0 +1,113 @@
+// .accordion-wrapper {
+//   & + * {
+//     margin-top: 0.5em;
+//   }
+// }
+
+// .accordion-item {
+//   overflow: hidden;
+//   transition: max-height 0.3s cubic-bezier(1, 0, 1, 0);
+//   height: auto;
+//   max-height: 9999px;
+// }
+
+// .accordion-item.collapsed {
+//   max-height: 0;
+//   transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+// }
+
+// .accordion-title {
+//   font-weight: 600;
+//   cursor: pointer;
+//   color: #666;
+//   padding: 0.5em 1.5em;
+//   border: solid 1px #ccc;
+//   border-radius: 1.5em;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+
+//   &::after {
+//     content: '';
+//     width: 0;
+//     height: 0;
+//     border-left: 5px solid transparent;
+//     border-right: 5px solid transparent;
+//     border-top: 5px solid currentColor;
+//   }
+
+//   &:hover,
+//   &.open {
+//     color: black;
+//   }
+
+//   &.open {
+//     &::after {
+//       content: '';
+//       border-top: 0;
+//       border-bottom: 5px solid;
+//     }
+//   }
+// }
+
+// .accordion-content {
+//   padding: 1em 1.5em;
+// }
+
+.accordion-wrapper {
+  background: #ffffff;
+  -moz-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 1px 1px 4px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  border-left: 8px solid var(--title-color);
+  margin-bottom: 16px;
+  padding: 24px 16px;
+  transition: background 0.3s;
+  @include desktop {
+    padding: 32px 16px;
+    line-height: 31px;
+    margin-bottom: 24px;
+  }
+  &.accordion-open {
+    background: var(--section-color);
+  }
+
+  .accordion-title {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: $family-secondary;
+    color: var(--title-color);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    @include desktop {
+      font-size: 24px;
+      line-height: 31px;
+    }
+  }
+
+  .accordion-content {
+    font-family: $family-primary;
+    font-size: 18px;
+    line-height: 23px;
+    color: var(--color-primary);
+    padding-top: 16px;
+    @include desktop {
+      padding-top: 32px;
+    }
+  }
+
+  .accordion-item {
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(1, 0, 1, 0);
+    height: auto;
+    max-height: 9999px;
+    &.collapsed {
+      max-height: 0;
+      transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+    }
+  }
+}

@@ -1,0 +1,44 @@
+.featured-insurance-section {
+  padding-top: 64px;
+  h2 {
+    text-align: center;
+    color: var(--title-color);
+    margin-bottom: 10px;
+    padding: 0 16px;
+  }
+  .section-with-image-content-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  .featured-insurance-subheader {
+    padding: 0 16px;
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+  .featured-insurance-content {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+  .featured-insurance-cta {
+    margin-top: 32px;
+    margin-bottom: 0;
+    // max-width: 540px;
+    align-self: center;
+    &:hover {
+      color: #fff;
+      background: linear-gradient(
+        150deg,
+        var(--button-primary-hover) 0%,
+        var(--button-primary-hover) 100%
+      );
+    }
+  }
+}
+.featured-insurance-disclaimer-section {
+  padding: 0 16px 64px 16px;
+  p {
+    text-align: center;
+    font-style: italic;
+  }
+}

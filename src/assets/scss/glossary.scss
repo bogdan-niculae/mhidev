@@ -1,0 +1,92 @@
+.glossary {
+  h2 {
+    font-family: $family-secondary;
+    font-weight: $semi-bold;
+    color: var(--title-color);
+    font-style: normal;
+    font-size: 32px;
+    @include desktop {
+      font-size: 40px;
+    }
+  }
+  h3 {
+    font-family: $family-primary;
+    font-weight: $bold;
+    color: var(--nav);
+    font-style: normal;
+    font-size: 24px;
+    margin-bottom: 0;
+  }
+  a {
+    font-family: $family-primary;
+    font-style: normal;
+    font-weight: $bold;
+    letter-spacing: 0.025em;
+    color: var(--nav);
+    text-transform: capitalize;
+    font-size: 16px;
+    @include desktop {
+      font-size: 18px;
+    }
+  }
+  a:hover {
+    color: var(--nav-darken);
+  }
+  .alphabet {
+    min-height: 101px;
+    height: fit-content;
+    background-color: var(--section-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 33px 16px;
+    a {
+      padding: 0 10px;
+    }
+    @include desktop {
+      height: 101px;
+      background-color: var(--section-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  .letters-list {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    //margin: 0 20px;
+    max-width: 1300px;
+    padding: 33px 16px;
+    @include widescreen {
+      padding: 64px 16px;
+      margin: 0 auto;
+    }
+    .glossaries-div {
+      margin-top: 32px;
+    }
+
+    .glossaries-wrapper {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      padding-left: 20px;
+      @include tablet {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @include desktop {
+        grid-template-columns: repeat(3, 1fr);
+        padding-left: 0;
+      }
+    }
+  }
+  .no-active {
+    color: var(--title-color-darken);
+    pointer-events: none;
+    cursor: default;
+    text-decoration: none;
+  }
+}

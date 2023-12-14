@@ -1,0 +1,38 @@
+.page-content-section {
+  padding-top: 32px;
+  padding-bottom: 64px;
+  .footnotes {
+    display: none;
+    overflow: hidden;
+  }
+  .quick-links {
+    display: none;
+  }
+  ul {
+    font-size: 16px;
+    @include desktop {
+      font-size: 18px;
+    }
+    li {
+      position: relative;
+      &:before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 100%;
+        background-color: $green;
+        position: absolute;
+        left: -15px;
+        top: 10px;
+      }
+    }
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--title-color);
+  }
+}
