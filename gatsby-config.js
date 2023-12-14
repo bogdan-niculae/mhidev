@@ -28,7 +28,8 @@ module.exports = {
     {
       resolve: `gatsby-source-wordpress`,
       options: {
-        url: 'https://mhi.evads.ro',
+        url: `mhi.evads.ro`,
+        protocol: `https`,
         verbose: true,
         production: {
           allow404Images: true,
