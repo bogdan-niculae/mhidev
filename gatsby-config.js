@@ -136,8 +136,8 @@ module.exports = {
     {
       resolve: "gatsby-plugin-robots-txt",
       options: {
-        host: "https://www.myhealthinsurance.com",
-        sitemap: "https://www.myhealthinsurance.com/sitemap/sitemap-index.xml",
+        host: "https://mhi.evads.ro",
+        sitemap: "https://mhi.evads.ro/sitemap/sitemap-index.xml",
         env: {
           development: {
             policy: [{ userAgent: "*", disallow: ["/"] }],
