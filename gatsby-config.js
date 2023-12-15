@@ -28,8 +28,8 @@ module.exports = {
     {
       resolve: `gatsby-source-wordpress`,
       options: {
-        url: `mhi.evads.ro`,
-        protocol: `https`,
+        url: `dev.cazaretargoviste.com`,
+        protocol: `http`,
         verbose: true,
         production: {
           allow404Images: true,
